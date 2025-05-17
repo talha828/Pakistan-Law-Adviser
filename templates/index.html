@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Pakistan Law Adviser</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</head>
+<body>
+  <!-- Audio elements for sounds (hidden) -->
+  <audio id="send-sound" src="{{ url_for('static', filename='assets/send.mp3') }}" preload="auto"></audio>
+  <audio id="receive-sound" src="{{ url_for('static', filename='assets/receive.mp3') }}" preload="auto"></audio>
+
+  <div class="chat_window">
+    <div class="top_menu">
+      <div class="title">Pakistan Law Adviser</div>
+      <p>AI can make mistakes. Verify every information you use.</p>
+    </div>
+
+    <ul class="messages" id="messages-container">
+      {% for message in chat_history %}
+        <li class="message {{ 'right' if message.sender == 'user' else 'left' }} appeared">
+          <div class="text">{{ message.text|safe }}</div>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <form method="POST" action="/chat" id="chat-form">
+      <div class="bottom_wrapper clearfix">
+        <div class="message_input_wrapper">
+          <input name="message" id="user-input" class="message_input" placeholder="Type your message here..." required autocomplete="off">
+        </div>
+        <div class="send_message">
+          <button type="submit" class="btn btn-primary">Send</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="footer">
+      <div id="container">
+        <div id="cont">
+          <div class="footer_center">
+            <h3>This is made by Talha Iqbal. &#169; <a href="https://github.com/talha828/">Github</a></h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
