@@ -5,6 +5,8 @@ from rag_helper import embed_query, load_faiss_index, search_index
 import time
 import secrets
 from dotenv import load_dotenv
+from flask import Flask, send_from_directory
+
 
 load_dotenv()  # Load environment variables from .env
 
@@ -19,6 +21,12 @@ GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 def home():
     chat_history = session.get('chat_history', [])
     return render_template("index.html", chat_history=chat_history)
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='assets/favicon.icon')
 
 @app.route('/test_chat', methods=['POST'])
 def test_chat():
@@ -87,4 +95,5 @@ Question:
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='10000', debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
