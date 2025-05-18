@@ -1,10 +1,19 @@
+import os
 from flask import Flask, jsonify, request, render_template, session
 import requests
 from rag_helper import embed_query, load_faiss_index, search_index
 import time
+import secrets
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env
 
 app = Flask(__name__)
-app.secret_key = 'my_temp_secret_123'  # Needed for session
+app.secret_key = secrets.token_hex(16)  # Needed for session
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 
 @app.route('/')
 def home():
@@ -15,41 +24,32 @@ def home():
 def test_chat():
     user_message = request.form['message']
 
-    # Get or create chat history
     chat_history = session.get('chat_history', [])
-
-    # Add user message
     chat_history.append({'sender': 'user', 'text': user_message})
 
-    # Simulate processing delay
     time.sleep(2)
 
-    # Simulate a bot response
     bot_response = f"Simulated answer for: {user_message}"
     chat_history.append({'sender': 'bot', 'text': bot_response})
     
-    # Save back to session
     session['chat_history'] = chat_history
-
     return render_template("index.html", chat_history=chat_history)
 
 @app.route('/chat', methods=['POST'])
 def chat():
     query = request.form['message']
-    
-        # Get or create chat history
     chat_history = session.get('chat_history', [])
-
-    # Add user message
     chat_history.append({'sender': 'user', 'text': query})
+
     index, chunks = load_faiss_index()
     embedding = embed_query(query)
     relevant_chunks = search_index(index, embedding, chunks)
     context = "\n".join(relevant_chunks)
 
-    prompt = f"""You are a legal expert in Pakistani law. Use the context below to answer the question and make sure your answer is as simple as possible.
-- Use simple and easy English , no legal jargon.
+    prompt = f"""You are a friendly legal expert in Pakistani law. Use the context below to answer the question and make sure your answer is as simple as possible.
+- Use simple and easy English, no legal jargon.
 - Summarize the answer in bullet points.
+- Always use latest law and rules.
 - Mention any legal sections or articles if applicable.
 
 Context:
@@ -61,19 +61,30 @@ Question:
 
     try:
         response = requests.post(
-            "http://localhost:11434/api/generate",
-            json={"model": "llama3.2", "prompt": prompt, "stream": False}
+            GROQ_API_URL,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {GROQ_API_KEY}"
+            },
+            json={
+                "model": GROQ_MODEL,
+                "messages": [
+                    {"role": "user", "content": prompt}
+                ]
+            }
         )
-        result = response.json()
 
-        chat_history.append({'sender': 'bot', 'text': result['response']})
+        data = response.json()
+        answer = data['choices'][0]['message']['content']
 
-        # Save back to session
+        chat_history.append({'sender': 'bot', 'text': answer})
         session['chat_history'] = chat_history
-       
+
         return render_template("index.html", chat_history=chat_history)
+
     except Exception as e:
         return jsonify({"response": f"⚠️ Error: {str(e)}"})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
