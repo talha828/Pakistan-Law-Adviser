@@ -25,7 +25,7 @@ A simple, intelligent chatbot built with Flask that answers questions related to
 
 ## 🖼️ UI Preview
 
-![ss](https://github.com/user-attachments/assets/a134a6fd-8044-4429-a7bc-7322c9732dbd)
+![ss](https://github.com/user-attachments/assets/9029e2b8-d689-4dec-a8e5-3157f0ee4ea0)
 
 
 ## 📁 Project Structure
