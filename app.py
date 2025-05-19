@@ -50,7 +50,7 @@ def log_chat_message(role, content):
 # ========== Model Downloader ==========
 def download_models():
     files = {
-        "faiss_index": "1-2CkCZL95tlFEw3FhuEqIArfjsFoYdZB",
+        "faiss.index": "1-2CkCZL95tlFEw3FhuEqIArfjsFoYdZB",
         "metadata.pkl": "1hj412DST-KCwZgfB5ymEMbPGuTPGTEBn"
     }
 
