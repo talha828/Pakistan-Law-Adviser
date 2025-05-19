@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 
 # === Load vector DB ===
-def load_faiss_index(index_path="/home/kali/Downloads/AI-laywer/model/faiss_index.index", metadata_path="/home/kali/Downloads/AI-laywer/model/metadata.pkl"):
+def load_faiss_index(index_path="model/faiss_index.index", metadata_path="model/metadata.pkl"):
     index = faiss.read_index(index_path)
     with open(metadata_path, "rb") as f:
         chunks = pickle.load(f)
