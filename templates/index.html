@@ -9,9 +9,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
+  <script>
+      function closeWelcomeModal() {
+    $('#welcomeModal').modal('hide');
+    localStorage.setItem('welcomeShown', 'true');
+  }
+
+    window.onload = function () {
+    if (!localStorage.getItem('welcomeShown')) {
+        $('#welcomeModal').modal('show');
+    }
+    };
+  </script>
 </head>
 <body>
+  <!-- Welcome Popup Modal -->
+<div class="modal fade" id="welcomeModal" tabindex="-1" role="dialog" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content" style="font-family: 'Mulish', sans-serif;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="welcomeModalLabel">📌 How to use Pakistan Law Adviser</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeWelcomeModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul>
+          <li>🧠 This tool has no memory — ask full, clear questions every time.</li>
+          <li>🔍 Use keywords like <b>article</b>, <b>section</b>, or <b>law name</b> for better results.</li>
+          <li>💬 Got suggestions or want to help? Click the <a href="https://github.com/talha828/" target="_blank">GitHub link</a> below.</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closeWelcomeModal()">Got it!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
   <!-- Audio elements for sounds (hidden) -->
   <audio id="send-sound" src="{{ url_for('static', filename='assets/send.mp3') }}" preload="auto"></audio>
   <audio id="receive-sound" src="{{ url_for('static', filename='assets/receive.mp3') }}" preload="auto"></audio>
@@ -36,7 +74,7 @@
           <input name="message" id="user-input" class="message_input" placeholder="Type your message here..." required autocomplete="off">
         </div>
         <div class="send_message">
-          <button type="submit" class="btn btn-primary">Send</button>
+          <button type="submit" class="no-style">Send</button>
         </div>
       </div>
     </form>
@@ -45,7 +83,7 @@
       <div id="container">
         <div id="cont">
           <div class="footer_center">
-            <h3>This is made by Talha Iqbal. &#169; <a href="https://github.com/talha828/">Github</a></h3>
+            <h3>Do you have any feeback & issue &#169; <a href="https://github.com/talha828/">Github</a></h3>
           </div>
         </div>
       </div>

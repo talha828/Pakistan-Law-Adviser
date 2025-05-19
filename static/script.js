@@ -129,7 +129,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="text">
                 <div class="typing-indicator">
                     <span class="typing-dot"></span>
+                    <span class="typing-dot-space"></span>
                     <span class="typing-dot"></span>
+                    <span class="typing-dot-space"></span>
                     <span class="typing-dot"></span>
                 </div>
             </div>
