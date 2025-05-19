@@ -55,7 +55,7 @@ def download_models():
     }
 
     for filename, file_id in files.items():
-        path =  filename
+        path = os.path.join("", filename)
         if not os.path.exists(path):
             print(f"📥 Downloading {filename}...")
             gdown.download(f"https://drive.google.com/uc?id={file_id}", path, quiet=False)
