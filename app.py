@@ -49,15 +49,13 @@ def log_chat_message(role, content):
 
 # ========== Model Downloader ==========
 def download_models():
-    os.makedirs("models", exist_ok=True)
-
     files = {
         "faiss_index": "1-2CkCZL95tlFEw3FhuEqIArfjsFoYdZB",
         "metadata.pkl": "1hj412DST-KCwZgfB5ymEMbPGuTPGTEBn"
     }
 
     for filename, file_id in files.items():
-        path = os.path.join("models", filename)
+        path =  filename
         if not os.path.exists(path):
             print(f"📥 Downloading {filename}...")
             gdown.download(f"https://drive.google.com/uc?id={file_id}", path, quiet=False)
