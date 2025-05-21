@@ -48,7 +48,7 @@ A simple, intelligent chatbot built with Flask that answers questions related to
 1. **Install Dependencies**
 
 ```bash
-pip install flask sentence-transformers faiss-cpu requests
+pip install requriment.txt
 ```
 
 2. **Go to groq website and get API key (it`s free)**
