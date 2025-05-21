@@ -38,7 +38,7 @@ A simple, intelligent chatbot built with Flask that answers questions related to
 │   └── index.html          # Chat interface
 ├── static/
 │   └── style.css           # Custom styling
-model/
+├── model/
 │   ├── faiss_index.index   # FAISS vector index
 │   └── metadata.pkl        # Corresponding metadata chunks
 ````
@@ -51,21 +51,26 @@ model/
 pip install flask sentence-transformers faiss-cpu requests
 ```
 
-2. **Run LLaMA Model with Ollama**
+2. **Go to groq website and get API key (it`s free)**
 
-Make sure Ollama and your `llama3.2` model are running:
+Make sure to check which model you are using 
 
 ```bash
-ollama run llama3.2
+https://console.groq.com/settings/billing/plans
+```
+3. **Download model from Google Drive**
+
+```bash
+https://drive.google.com/drive/folders/1bbHCXDFlgJydrqXsQ2tdNuDnMvx9T3Lf?usp=sharing
 ```
 
-3. **Run Flask App**
+4. **Run Flask App**
 
 ```bash
 python app.py
 ```
 
-4. **Access App**
+5. **Access App**
 
 Visit: `http://localhost:5000` in your browser.
 
