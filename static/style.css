@@ -26,7 +26,6 @@ body {
     max-width: 100%;
     height: 100svh;
     max-height: 100%;
-    border-radius: 0px;
     background-color: #252526;
     margin: 0;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -72,7 +71,7 @@ body {
 
 .top_menu p {
     color: #ffffff;
-    font-size: 14px;
+    font-size: 12px;
     margin-top: 40px;
     font-weight: 100;
     letter-spacing: 0.1cap;
@@ -232,7 +231,7 @@ body {
 
 /* Input Area with Interactive Effects */
 .bottom_wrapper {
-    height: 10px;
+    height: 40px;
     background-color: #252526;
     padding: 15px;
     display: flex;
@@ -266,7 +265,7 @@ body {
     height: 50px;
     padding: 0 15px;
     background-color: #2d2d30;
-    margin-top: 70px;
+    margin-top: 50px;
     border: none;
     border-radius: 10px;
     color: white;
@@ -292,7 +291,7 @@ button.no-style {
     background-color: #1a73e8;
     color: white;
     border: none;
-    margin-top: 70px;
+    margin-top: 50px;
     border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
