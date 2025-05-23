@@ -608,16 +608,16 @@ button.no-style {
 }
 
 #paymentModal .modal-footer .btn-success {
-    background-color: #28a745;
-    border-color: #28a745;
+    background-color: #1a73e8;
+    border-color: #1a73e8;
     font-weight: 600;
     padding: 10px 25px;
     transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 #paymentModal .modal-footer .btn-success:hover {
-    background-color: #218838;
-    border-color: #1e7e34;
+    background-color: #3281e9;
+    border-color: #3281e9;
 }
 
 #paymentModal .modal-body .alert-warning {

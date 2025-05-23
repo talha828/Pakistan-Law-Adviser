@@ -6,7 +6,7 @@ import os
 import json
 import time
 import secrets
-from datetime import datetime
+from datetime import datetime, timedelta # Import timedelta for date calculations
 from functools import wraps # Used for decorators
 import uuid # Imported for dummy user creation in db_init
 
@@ -103,11 +103,13 @@ def load_chat_log():
                 return []
     return []
 
-def log_chat_message(role, content):
-    """Logs a chat message to the chat history JSON file."""
+# MODIFIED: Now accepts user_id to log per-user messages
+def log_chat_message(user_id, role, content):
+    """Logs a chat message to the chat history JSON file, including user_id."""
     history = load_chat_log()
     history.append({
         "timestamp": datetime.now().isoformat(),
+        "user_id": user_id, # Store user_id for filtering
         "role": role,
         "content": content
     })
@@ -196,21 +198,25 @@ def logout():
 @app.route('/test_chat', methods=['POST'])
 def test_chat():
     """Simulates a chat interaction without hitting external APIs."""
+    user_id = session.get('user_id') # Get user_id for logging
+    if not user_id:
+        return jsonify({"error": "Not logged in"}), 401
+
     user_message = request.form['message']
     if 'chat_history' not in session:
         session['chat_history'] = []
 
     session['chat_history'].append({'sender': 'user', 'text': user_message})
-    log_chat_message('user', user_message)
+    log_chat_message(user_id, 'user', user_message) # Pass user_id
 
     # Simulated response
     time.sleep(1) # Shorter sleep for faster testing
     bot_response = f"Simulated answer for: {user_message}"
     session['chat_history'].append({'sender': 'bot', 'text': bot_response})
-    log_chat_message('bot', bot_response)
+    log_chat_message(user_id, 'bot', bot_response) # Pass user_id
 
     # Re-render the chatscreen with updated chat history and user info
-    user = User.query.get(session.get('user_id')) # Use .get() for safety
+    user = User.query.get(user_id) # Use .get() for safety
     if not user:
         return jsonify({"error": "User session expired or invalid."}), 401 # Handle missing user
 
@@ -265,7 +271,7 @@ def chat():
         session['chat_history'] = []
 
     session['chat_history'].append({'sender': 'user', 'text': query})
-    log_chat_message('user', query)
+    log_chat_message(user_id, 'user', query) # Pass user_id
 
     try:
         # Step 1: Improve user question (using GROQ API)
@@ -290,7 +296,7 @@ def chat():
         )
         improve_response.raise_for_status() # Raise an exception for HTTP errors
         improved_question = improve_response.json()['choices'][0]['message']['content'].strip()
-        log_chat_message('user', improved_question)
+        log_chat_message(user_id, 'user', improved_question) # Pass user_id
 
         # Step 2: Get context from FAISS (assuming rag_helper functions are available)
         context = "No specific legal context available. Please consult a qualified legal professional for advice on Pakistani law." # Default context
@@ -307,11 +313,18 @@ def chat():
 
 
         # Step 3: Final prompt with context
-        final_prompt = f"""You are a friendly legal expert in Pakistani law. Use the context below to answer the question and make sure your answer is as simple as possible.
-- Use simple and easy English, no legal jargon.
-- Detail the answer in bullet points with clear explanation of laws and sections.
-- Always use the latest law if present and rules.
-- Mention any legal sections or articles if applicable.
+        final_prompt = f"""You are a helpful and friendly legal expert in Pakistani law. Your goal is to provide clear, easy-to-understand, and practical answers.
+Always use the context provided to answer the question, but present the information in a way that is approachable for someone without legal background.
+
+Here's how to structure your answer:
+- **Start with a friendly and empathetic tone.** Acknowledge the user's situation or question.
+- **Explain legal concepts simply:** Avoid jargon. If a legal term is necessary, explain it clearly in simple English.
+- **Use bullet points for clarity** where appropriate, but ensure the explanations flow well like a conversation.
+- **Focus on practical implications:** What does the law mean for the user in real-world terms?
+- **Always use the latest law if present and rules.**
+- **Mention relevant legal sections or articles** for accuracy, but integrate them smoothly into the explanation, rather than just listing them.
+- **If the question is about avoiding legal obligations (like alimony):** Explain the legal framework and potential legal avenues or considerations within the law, rather than endorsing avoidance. Focus on legal rights, obligations, and the process involved.
+- **Conclude by suggesting professional advice** if the matter is complex or requires specific action.
 
 Context:
 {context}
@@ -335,7 +348,7 @@ Question:
         response.raise_for_status() # Raise an exception for HTTP errors
         answer = response.json()['choices'][0]['message']['content']
         session['chat_history'].append({'sender': 'bot', 'text': answer})
-        log_chat_message('bot', answer)
+        log_chat_message(user_id, 'bot', answer) # Pass user_id
 
         # Re-render the chatscreen with updated chat history and user info
         user = User.query.get(session.get("user_id")) # Get latest user object
@@ -358,16 +371,15 @@ Question:
         error_msg = f"⚠️ API Error: Could not connect to the AI service. Details: {str(req_err)}"
         print(error_msg)
         session['chat_history'].append({'sender': 'bot', 'text': error_msg})
-        log_chat_message('bot', error_msg)
+        log_chat_message(user_id, 'bot', error_msg) # Pass user_id
         # For simplicity, we'll just return the error. Consider chat refund logic here.
         return jsonify({"response": error_msg}), 500
     except Exception as e:
         error_msg = f"⚠️ An unexpected error occurred: {str(e)}"
         print(error_msg)
         session['chat_history'].append({'sender': 'bot', 'text': error_msg})
-        log_chat_message('bot', error_msg)
+        log_chat_message(user_id, 'bot', error_msg) # Pass user_id
         return jsonify({"response": error_msg}), 500
-
 
 ## --- Admin Panel Routes ---
 @app.route('/admin_login', methods=['GET', 'POST'])
@@ -401,6 +413,86 @@ def admin_panel():
 
 
 ## --- Admin API Endpoints (Protected by @admin_required) ---
+@app.route('/api/list_all_users', methods=['GET']) # NEW ENDPOINT
+@admin_required
+def list_all_users():
+    """
+    API endpoint to list all registered users.
+    Returns a list of user dictionaries.
+    """
+    users = User.query.all()
+    user_list = []
+    for user in users:
+        # Ensure status is up-to-date before sending to admin panel
+        check_and_update_user_status(user)
+        db.session.refresh(user) # Refresh to get latest DB state after status update
+        user_list.append({
+            "id": user.id,
+            "email": user.email,
+            "name": user.name,
+            "chats_used": user.chats_used,
+            "total_chats_allowed": user.total_chats_allowed,
+            "paid": user.paid,
+            "paid_until": user.paid_until.isoformat() if user.paid_until else None,
+            "has_active_subscription": user.has_active_subscription(),
+            "remaining_chats": user.get_remaining_chats()
+        })
+    return jsonify(user_list), 200
+
+@app.route('/api/get_user_chat_history', methods=['GET']) # NEW ENDPOINT
+@admin_required
+def get_user_chat_history():
+    """
+    API endpoint to retrieve chat history for a specific user.
+    Filters chat_history.json by user_id.
+    """
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({"error": "User ID parameter is required"}), 400
+
+    all_chat_history = load_chat_log()
+    user_chat_history = [
+        msg for msg in all_chat_history if msg.get('user_id') == user_id
+    ]
+    return jsonify(user_chat_history), 200
+
+
+@app.route('/api/delete_user', methods=['POST']) # NEW ENDPOINT
+@admin_required
+def delete_user():
+    """
+    API endpoint to delete a user from the database and their chat history.
+    Expects JSON payload with 'user_id'.
+    """
+    data = request.get_json()
+    user_id = data.get('user_id')
+
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+
+    user_to_delete = User.query.get(user_id)
+    if not user_to_delete:
+        return jsonify({"error": "User not found"}), 404
+
+    try:
+        # 1. Delete user from database
+        db.session.delete(user_to_delete)
+        db.session.commit()
+
+        # 2. Delete user's chat history from chat_history.json
+        all_chat_history = load_chat_log()
+        updated_chat_history = [
+            msg for msg in all_chat_history if msg.get('user_id') != user_id
+        ]
+        with open(CHAT_LOG_FILE, "w") as file:
+            json.dump(updated_chat_history, file, indent=4)
+
+        return jsonify({"message": f"User {user_id} and their chat history deleted successfully."}), 200
+    except Exception as e:
+        db.session.rollback() # Rollback in case of error
+        return jsonify({"error": f"Failed to delete user: {str(e)}"}), 500
+
+
 @app.route('/api/search_user', methods=['GET'])
 @admin_required
 def search_user():
@@ -460,8 +552,7 @@ def api_mark_user_paid():
     else:
         return jsonify({"error": "User not found"}), 404
 
-
-@app.route('/api/mark_user_unpaid', methods=['POST']) # This is the endpoint you're asking about
+@app.route('/api/mark_user_unpaid', methods=['POST'])
 @admin_required
 def api_mark_user_unpaid():
     """
@@ -492,7 +583,8 @@ def api_mark_user_unpaid():
         }), 200
     else:
         return jsonify({"error": "User not found"}), 404
-    
+
+
 ## --- Utility Routes ---
 @app.route('/favicon.ico')
 def favicon():
@@ -545,3 +637,4 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     # debug=True automatically enables auto-reloader and debugger
     app.run(host='0.0.0.0', port=port, debug=True)
+
