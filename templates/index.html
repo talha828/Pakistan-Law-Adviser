@@ -1,70 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}" type="image/x-icon">
   <meta charset="utf-8">
-  <title>Pakistan Law Adviser</title>
-  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <title>Pakistan Law Adviser</title>
+
+  <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}" type="image/x-icon">
+
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
   <script src="{{ url_for('static', filename='script.js') }}"></script>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-  <script>
-      function closeWelcomeModal() {
-    $('#welcomeModal').modal('hide');
-    localStorage.setItem('welcomeShown', 'true');
-  }
-
-    window.onload = function () {
-    if (!localStorage.getItem('welcomeShown')) {
-        $('#welcomeModal').modal('show');
-    }
-    };
-  </script>
 </head>
 <body>
-  <!-- Welcome Popup Modal -->
-<div class="modal fade" id="welcomeModal" tabindex="-1" role="dialog" aria-labelledby="welcomeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content" style="font-family: 'Mulish', sans-serif;">
-      <div class="modal-header">
-        <h5 class="modal-title" id="welcomeModalLabel">📌 How to use Pakistan Law Adviser</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeWelcomeModal()">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <ul>
-          <li>🧠 This tool has no memory — ask full, clear questions every time.</li>
-          <li>🔍 Use keywords like <b>article</b>, <b>section</b>, or <b>law name</b> for better results.</li>
-          <li>💬 Got suggestions or want to help? Click the <a href="https://github.com/talha828/" target="_blank">GitHub link</a> below.</li>
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="closeWelcomeModal()">Got it!</button>
+  <input type="hidden" id="initialRemainingChats" value="{{ remaining_chats }}">
+  <input type="hidden" id="initialIsActiveSubscription" value="{{ 'true' if is_active_subscription else 'false' }}">
+  <input type="hidden" id="chatApiUrl" value="{{ url_for('chat') }}">
+  <input type="hidden" id="initialTotalChatsAllowed" value="{{ total_chats_allowed }}">
+
+  <div class="modal fade" id="welcomeModal" tabindex="-1" role="dialog" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content" style="font-family: 'Mulish', sans-serif;">
+        <div class="modal-header">
+          <h5 class="modal-title" id="welcomeModalLabel">📌 How to use Pakistan Law Adviser</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeWelcomeModal()"></button>
+        </div>
+        <div class="modal-body">
+          <ul>
+            <li>🧠 This tool has no memory — ask full, clear questions every time.</li>
+            <li>🔍 Use keywords like <b>article</b>, <b>section</b>, or <b>law name</b> for better results.</li>
+            <li>💬 Got suggestions or want to help? Click the <a href="https://github.com/talha828/" target="_blank">GitHub link</a> below.</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="closeWelcomeModal()">Got it!</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-  <!-- Audio elements for sounds (hidden) -->
+  <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header text-white" style="background-color: #007bff;">
+          <h5 class="modal-title fw-semibold" id="paymentModalLabel">Complete Your Payment to Unlock Access</h5>
+        </div>
+        <div class="modal-body">
+          <p>To continue, please send <strong>150PKR</strong> using one of the following payment methods:</p>
+          <ul class="list-unstyled">
+            <li class="mb-2">
+              <strong>Phone Number:</strong> <span id="payment-number">03012070920</span>
+              <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('03012070920')">Copy</button>
+            </li>
+            <li class="mb-2"><strong>Accepted Apps:</strong> Easypaisa, NayaPay, JazzCash</li>
+            <li><strong>Recipient Name:</strong> Talha Iqbal</li>
+          </ul>
+          <p class="mt-3">After making the payment, kindly share a screenshot of your transaction via WhatsApp for verification:</p>
+          <p>
+            <strong>WhatsApp Number:</strong> <span id="whatsapp-number">03190347351</span>
+            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('03190347351')">Copy</button>
+          </p>
+          <div class="alert alert-warning mt-4 small">
+            Please note: Your chat limit will be reset immediately after your payment is verified. This payment grants access for <strong>1 month</strong>.
+          </div>
+        </div>
+        <div class="modal-footer justify-content-center "style="background-color: #f8f9fa;">
+          <button type="button" class="btn btn-success btn-lg" onclick="alert('Thank you! We are now verifying your payment via WhatsApp. Please allow a moment for us to confirm.')">
+            I've Paid – Awaiting Verification
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <audio id="send-sound" src="{{ url_for('static', filename='assets/send.mp3') }}" preload="auto"></audio>
   <audio id="receive-sound" src="{{ url_for('static', filename='assets/receive.mp3') }}" preload="auto"></audio>
 
   <div class="chat_window">
     <div class="top_menu">
-      <div class="title">Pakistan Law Adviser</div>
-      <p>AI can make mistakes. Verify every information you use.</p>
+      <div class="user-info">
+        <img src="{{ user_pic }}" alt="Profile" class="profile-pic">
+        <span class="user-name">{{ user_name }}</span>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+      </div>
+      <div class="heading-position">
+        <div class="title">Pakistan Law Adviser</div>
+      <p class="disclaimer">AI can make mistakes. Verify every information you use.</p>
+
+      </div>
+      <div class="payment-status-container">
+        {% if is_active_subscription %}
+          <span class="active-subscription-text">Active Subscription</span>
+          <span class="chats-remaining-text">Chats: {{ remaining_chats }} / {{ total_chats_allowed }}</span>
+        {% else %}
+          <button onclick="showPaymentPopup()" class="pay-now-btn">Pay Now</button>
+        {% endif %}
+      </div>
     </div>
 
     <ul class="messages" id="messages-container">
       {% for message in chat_history %}
-        <li class="message {{ 'right' if message.sender == 'user' else 'left' }} appeared">
-          <div class="text">{{ message.text|safe }}</div>
-        </li>
+      <li class="message {{ 'right' if message.sender == 'user' else 'left' }} appeared">
+        <div class="text">{{ message.text|safe }}</div>
+      </li>
       {% endfor %}
     </ul>
 
@@ -80,12 +125,8 @@
     </form>
 
     <div class="footer">
-      <div id="container">
-        <div id="cont">
-          <div class="footer_center">
-            <h3>Do you have any feeback & issue &#169; <a href="https://github.com/talha828/">Github</a></h3>
-          </div>
-        </div>
+      <div class="footer_content">
+        <h3>Do you have any feedback & issue &#169; <a href="https://github.com/talha828/" target="_blank">Github</a></h3>
       </div>
     </div>
   </div>

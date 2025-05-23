@@ -11,11 +11,10 @@ body {
     background-attachment: fixed;
     position: relative;
     transition: background-color 0.5s ease;
-} 
+}
 
 * {
-    /* box-sizing: border-box; */
-    align-content: center;
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -23,11 +22,10 @@ body {
 .chat_window {
     position: relative;
     width: 100%;
-    max-width: 100%;
-    height: 100svh;
-    max-height: 100%;
+    max-width: 100%; /* Max width for desktop */
+    height: 100svh; /* Use svh for more consistent mobile viewport height */
     background-color: #252526;
-    margin: 0;
+    margin: 0 auto; /* Center horizontally */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
@@ -35,6 +33,7 @@ body {
     animation: fadeInUp 0.6s ease-out forwards;
     transform: translateY(20px);
     opacity: 0;
+    border-radius: 0px; /* Added rounded corners for the main chat window */
 }
 
 @keyframes fadeInUp {
@@ -44,38 +43,130 @@ body {
     }
 }
 
-/* Top Menu with Subtle Glow */
+/* Top Menu Layout and Styling */
 .top_menu {
     background-color: #1e1e1e;
     padding: 15px 20px;
     box-shadow: 0 1px 30px rgba(0, 0, 0, 0.1);
     display: flex;
-    justify-content: center;
-    position: relative;
+    justify-content: space-between; /* Space out left, center, right sections */
+    align-items: center;
+    min-height: 80px;
     transition: all 0.3s ease;
+    flex-wrap: nowrap; /* Prevent wrapping on desktop, handle in media query */
+    border-top-left-radius: 12px; /* Match chat_window border-radius */
+    border-top-right-radius: 12px;
 }
 
 .top_menu:hover {
     box-shadow: 0 2px 40px rgba(0, 0, 0, 0.2);
 }
 
+.top_menu .top-menu-left,
+.top_menu .top-menu-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.top_menu .top-menu-center {
+    flex-grow: 1; /* Allows center section to take available space */
+    text-align: center;
+}
+
+.top_menu .profile-pic {
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
+    border: 2px solid #1a73e8;
+}
+
+.top_menu .user-name {
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.top_menu .logout-btn {
+    background: none;
+    border: none;
+    color: #f8d7da; /* Light red for logout */
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 13px;
+    margin-left: 10px;
+    transition: color 0.3s ease;
+}
+
+.top_menu .logout-btn:hover {
+    color: #dc3545; /* Darker red on hover */
+}
+.top_menu .heading-position {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+}
+
 .top_menu .title {
-    position: absolute;
     color: #ffffff;
     font-size: 20px;
-    margin: 0;
     font-weight: 600;
-    z-index: 10;
+    margin: 0; /* Remove default margins */
     animation: textGlow 3s infinite alternate;
 }
 
-.top_menu p {
+.top_menu .disclaimer {
     color: #ffffff;
     font-size: 12px;
-    margin-top: 40px;
-    font-weight: 100;
+    margin: 5px 0 0; /* Adjust margin as needed */
+    font-weight: 200;
     letter-spacing: 0.1cap;
 }
+
+.payment-status-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.active-subscription-text {
+    color: #28a745; /* Green for active subscription */
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.chats-remaining-text {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.pay-now-btn {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.pay-now-btn:hover {
+    background-color: #0d62c9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3);
+}
+
+.pay-now-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
 
 @keyframes textGlow {
     0% {
@@ -93,7 +184,7 @@ body {
     overflow-y: overlay;
     background-color: #252526;
     scroll-behavior: smooth;
-    height: calc(100vh - 250px);
+    height: calc(100vh - 160px); /* Adjusted height: 80px (top_menu) + 80px (bottom_wrapper) = 160px */
     transition: background-color 0.5s ease;
 }
 
@@ -118,7 +209,7 @@ body {
     opacity: 0;
     transform: scale(0.95);
     animation: messageAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    animation-delay: calc(var(--i) * 0.1s);
+    animation-delay: calc(var(--i) * 0.1s); /* Use a CSS variable for staggered animation */
 }
 
 @keyframes messageAppear {
@@ -145,7 +236,7 @@ body {
     max-width: 80%;
     position: relative;
     word-wrap: break-word;
-    white-space: pre-wrap;
+    white-space: pre-wrap; /* Preserve whitespace and line breaks */
     transition: all 0.3s ease, transform 0.2s ease;
 }
 
@@ -172,23 +263,13 @@ body {
 .typing-indicator {
     display: inline-flex;
     align-items: center;
-    justify-self: center;
-    padding: 8px 5px;
+    padding: 8px 15px; /* More padding for a softer look */
     background: #2d2d30;
-    border-radius: 24px;
+    border-radius: 20px; /* Slightly more rounded */
     margin: 5px 0;
     max-width: 120px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     animation: pulse 2s infinite ease-in-out;
-}
-
-.text {
-    align-items: center;
-    justify-self: center;
-}
-
-.left-space {
-    width: 5%;
 }
 
 @keyframes pulse {
@@ -206,10 +287,6 @@ body {
     padding: 0 5px;
 }
 
-.typing-dot-space {
-    width: 15px;
-}
-
 .typing-dot {
     width: 8px;
     height: 8px;
@@ -217,13 +294,16 @@ body {
     background: #1a73e8;
     animation: typingAnimation 1.4s infinite ease-in-out;
 }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
 
 @keyframes typingAnimation {
-    0%, 60%, 100% { 
+    0%, 60%, 100% {
         transform: translateY(0) scale(1);
         opacity: 0.6;
     }
-    30% { 
+    30% {
         transform: translateY(-4px) scale(1.2);
         opacity: 1;
     }
@@ -231,16 +311,18 @@ body {
 
 /* Input Area with Interactive Effects */
 .bottom_wrapper {
-    height: 40px;
+    margin-bottom: 30px; /* Space for the footer */;
     background-color: #252526;
     padding: 15px;
     display: flex;
-    flex-wrap: wrap;
+    align-items: center; /* Vertically align items */
     gap: 10px;
     border-top: 1px solid #3e3e42;
-    margin-bottom: 90px;
-    bottom: 5;
+    min-height: 80px; /* Ensure consistent height */
+    position: relative; /* For absolute positioning of footer */
     transition: all 0.3s ease;
+    border-bottom-left-radius: 12px; /* Match chat_window border-radius */
+    border-bottom-right-radius: 12px;
 }
 
 .message_input_wrapper {
@@ -265,7 +347,6 @@ body {
     height: 50px;
     padding: 0 15px;
     background-color: #2d2d30;
-    margin-top: 50px;
     border: none;
     border-radius: 10px;
     color: white;
@@ -281,7 +362,7 @@ body {
 }
 
 button.no-style {
-  all: unset;
+  all: unset; /* Resets all browser default button styles */
   cursor: pointer;
 }
 
@@ -291,7 +372,6 @@ button.no-style {
     background-color: #1a73e8;
     color: white;
     border: none;
-    margin-top: 50px;
     border-radius: 10px;
     cursor: pointer;
     font-size: 16px;
@@ -315,6 +395,7 @@ button.no-style {
     transform: translateY(0);
 }
 
+/* Ripple effect on click */
 .send_message::after {
     content: '';
     position: absolute;
@@ -347,18 +428,20 @@ button.no-style {
 /* Footer with Subtle Animation */
 .footer {
     position: absolute;
-    bottom: 0%;
+    bottom: 0;
     left: 0;
     width: 100%;
-    background-color: transparent;
+    background-color: #1e1e1e; /* Match top menu background */
     padding: 10px 0;
-    border-radius: 10px;
     text-align: center;
     z-index: 10;
     animation: fadeIn 1s ease-in-out forwards;
     animation-delay: 0.5s;
     opacity: 0;
     color: #ffffff;
+    border-top: 1px solid #3e3e42; /* Add a subtle border */
+    border-bottom-left-radius: 12px; /* Match chat_window border-radius */
+    border-bottom-right-radius: 12px;
 }
 
 @keyframes fadeIn {
@@ -367,11 +450,21 @@ button.no-style {
     }
 }
 
+.footer .footer_content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
 .footer h3 {
-    font-size: 16px;
+    font-size: 14px;
+    margin: 0;
+    font-weight: 400;
 }
 
 .footer h3 a {
+    color: #1a73e8; /* Blue link color */
+    text-decoration: none;
     position: relative;
     overflow: hidden;
 }
@@ -383,7 +476,7 @@ button.no-style {
     left: 0;
     width: 100%;
     height: 1px;
-    background: white;
+    background: #1a73e8;
     transform: scaleX(0);
     transform-origin: right;
     transition: transform 0.3s ease;
@@ -392,48 +485,6 @@ button.no-style {
 .footer h3 a:hover::after {
     transform: scaleX(1);
     transform-origin: left;
-}
-
-/* Responsive Adjustments with Smooth Transitions */
-@media (max-width: 768px) {
-    .chat_window {
-        width: 100%;
-        height: 100vh;
-        max-height: none;
-        border-radius: 0;
-        margin: 0;
-        animation: mobileSlideIn 0.6s ease-out forwards;
-    }
-
-    @keyframes mobileSlideIn {
-        from {
-            transform: translateY(10px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    .messages {
-        height: calc(100vh - 220px);
-        padding: 15px;
-    }
-
-    .message .text {
-        max-width: 85%;
-    }
-
-    .typing-indicator {
-        max-width: 100px;
-        padding: 10px 15px;
-    }
-
-    .bottom_wrapper {
-        padding: 10px;
-        margin-bottom: 80px;
-    }
 }
 
 /* Text Formatting Animations */
@@ -502,4 +553,238 @@ button.no-style {
 
 .message .text:hover .section-divider::after {
     transform: scaleX(1);
+}
+
+/* Payment Modal Specific Styles */
+#paymentModal .modal-header {
+    background-color: #007bff; /* Primary blue for header */
+    color: white;
+    border-bottom: none;
+    text-align: center;
+    justify-content: center;
+    padding: 15px 20px;
+    border-top-left-radius: calc(15px - 1px); /* Match modal-content border-radius */
+    border-top-right-radius: calc(15px - 1px);
+}
+
+#paymentModal .modal-content {
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    overflow: hidden; /* Ensure rounded corners clip content */
+}
+
+#paymentModal .modal-body {
+    background-color: #252526;
+    font-family: 'Mulish', sans-serif;
+    color: #ffffff;
+    padding: 20px;
+}
+
+#paymentModal .modal-body .list-unstyled strong {
+    color: #1a73e8; /* Blue for strong text in list */
+}
+
+#paymentModal .modal-body .btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 5px;
+    transition: all 0.2s ease;
+}
+
+#paymentModal .modal-body .btn-outline-secondary:hover {
+    color: #ffffff;
+    background-color: #6c757d;
+}
+
+#paymentModal .modal-footer {
+    background-color: #f8f9fa; /* Light gray for footer */
+    border-top: 1px solid #e9ecef;
+    padding: 15px 20px;
+    justify-content: center;
+    border-bottom-left-radius: calc(15px - 1px);
+    border-bottom-right-radius: calc(15px - 1px);
+}
+
+#paymentModal .modal-footer .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    font-weight: 600;
+    padding: 10px 25px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+#paymentModal .modal-footer .btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+#paymentModal .modal-body .alert-warning {
+    background-color: #ffeeba; /* Light yellow background */
+    color: #856404; /* Dark yellow text */
+    border-color: #ffeeba;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+
+/* Responsive Adjustments with Smooth Transitions */
+@media (max-width: 768px) {
+    .chat_window {
+        max-width: 100%; /* Ensure it takes full width on smaller screens */
+        border-radius: 0; /* Remove rounded corners on mobile for full screen effect */
+    }
+
+    .top_menu {
+        flex-direction: column; /* Stack items vertically */
+        height: auto;
+        padding: 15px; /* Adjust padding */
+        border-top-left-radius: 0; /* Remove rounded corners */
+        border-top-right-radius: 0;
+    }
+
+    .top_menu .top-menu-left,
+    .top_menu .top-menu-right,
+    .top_menu .top-menu-center {
+        width: 100%; /* Take full width */
+        justify-content: center; /* Center content */
+        margin-bottom: 10px; /* Space between stacked items */
+    }
+    .top_menu .top-menu-left { order: 1; } /* Order them for better mobile layout */
+    .top_menu .top-menu-center { order: 2; margin-bottom: 5px; }
+    .top_menu .top-menu-right { order: 3; margin-bottom: 0; } /* No margin bottom for the last item */
+
+
+    .top_menu .user-info {
+        gap: 4px;
+        text-align: center; /* Center text on mobile */
+    }
+    .top_menu .profile-pic {
+        visibility: hidden; /* Hide profile picture on mobile */
+        width: 30px;
+        height: 30px;
+    }
+    .top_menu .user-name {
+        font-size: 14px;
+    }
+    .top_menu .logout-btn {
+        font-size: 12px;
+    }
+
+    .top_menu .title {
+        font-size: 18px;
+    }
+    .top_menu .p {
+        text-align: center;
+        font-size: 18px;
+        justify-content: center;
+    }
+
+    .top_menu .disclaimer {
+        font-size: 11px;
+        margin-top: 0;
+    }
+
+    .payment-status-container {
+        flex-direction: column; /* Stack text and button if needed */
+        gap: 5px;
+    }
+
+    .active-subscription-text, .chats-remaining-text, .pay-now-btn {
+        font-size: 13px;
+        padding: 6px 12px;
+    }
+
+    .messages {
+        height: calc(100vh - 220px); /* Adjust for smaller top/bottom bars (approx 80px top + 80px bottom + 60px footer) */
+        padding: 15px;
+    }
+
+    .message .text {
+        max-width: 90%; /* Allow messages to take more width */
+        font-size: 13px; /* Slightly smaller font on mobile */
+        padding: 10px 14px;
+    }
+
+    .typing-indicator {
+        max-width: 100px;
+        padding: 10px 15px;
+    }
+
+    .bottom_wrapper {
+        padding: 10px;
+        min-height: 70px; /* Adjusted height for mobile input area */
+        border-bottom-left-radius: 0; /* Remove rounded corners */
+        border-bottom-right-radius: 0;
+    }
+
+    .message_input {
+        height: 45px;
+    }
+    .send_message {
+        width: 80px; /* Smaller send button */
+        height: 45px;
+        font-size: 14px;
+    }
+
+    .footer {
+        padding: 8px 0;
+        border-bottom-left-radius: 0; /* Remove rounded corners */
+        border-bottom-right-radius: 0;
+    }
+    .footer h3 {
+        font-size: 12px;
+    }
+}
+
+/* Further adjustments for very small screens (e.g., old mobile devices) */
+@media (max-width: 480px) {
+    .pay-now-btn {
+        background-color: #1e1e1e;
+        color: #1a73e8;
+        font-weight: 800;
+    }
+    .pay-now-btn:hover {
+        background-color: #1e1e1e;
+        font-size: 16px;
+        box-shadow: none;
+    }
+    .bottom_wrapper {
+        margin-bottom: 30px;
+    }
+    .messages {
+        padding: 10px;
+    }
+    .message .text {
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+    .message_input {
+        height: 40px;
+        font-size: 14px;
+    }
+    .send_message {
+        height: 40px;
+        font-size: 13px;
+    }
+    .top_menu .title {
+        font-size: 16px;
+    }
+    .top_menu .title {
+        font-size: 16px;
+        text-align: center;
+    }
+    .top_menu .disclaimer {
+        font-size: 10px;
+    }
+    .payment-status-container {
+        flex-direction: row; /* Try to keep them in a row if space allows, or adjust */
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .active-subscription-text, .chats-remaining-text, .pay-now-btn {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
 }

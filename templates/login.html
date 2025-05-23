@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chatbot Login</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #f2f5f9;
+      color: #333;
+    }
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #1e1e1e ;
+      animation: fadeIn 1s ease-out;
+    }
+    .login-box {
+      background: #1e1e1e;
+      padding: 40px;
+      border-radius: 10px;
+      text-align: center;
+      animation: slideIn 1s ease-out;
+    }
+    .login-container  h1 {
+      margin-bottom: 10px;
+      font-size: 50px;
+      color: #ffffff;
+      text-align: center;
+    }
+    #g_id_onload, #g_id_signin {
+      margin-top: 20px;
+    }
+    .chat-usage {
+      margin-top: 70px;
+      font-size: 14px;
+      color: #666;
+    }
+    .pay-btn {
+      width: 30%;
+      min-width: 200px;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background-color: #4e4376;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    @keyframes slideIn {
+      0% { transform: translateY(50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Pakistan Law Adviser</h1>
+    <div class="login-box">
+      <div id="g_id_onload"
+        data-client_id="451240130696-kul9jn79rri6bs3012e9f0oa2pqevrkc.apps.googleusercontent.com"
+        data-context="signin"
+        data-ux_mode="popup"
+        data-callback="handleGoogleLogin">
+      </div>
+      <div class="g_id_signin" data-type="standard" data-theme="filled_blue" data-size="large" data-shape="pill" data-logo_alignment="left"></div>
+      <div class="chat-usage" id="usage-info">You have 10 free chats. After that, continue for only 150 PKR.</div>
+      <!-- <button class="pay-btn" onclick="startPayment()">Pay 150 PKR to Continue</button> -->
+    </div>
+  </div>
+
+  <script>
+function handleGoogleLogin(response) {
+  fetch('/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ credential: response.credential })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      window.location.href = "/chatscreen"; 
+    } else {
+      alert("Login failed. Please try again.");
+    }
+  })
+  .catch(err => console.error("Login error:", err));
+}
+  </script>
+</body>
+</html>
