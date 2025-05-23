@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Manage Users</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 800px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .header-title {
+            color: #007bff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #343a40;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .user-details {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            background-color: #e9f5ff;
+        }
+        .user-details p {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .user-details strong {
+            color: #0056b3;
+        }
+        .alert-info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="header-title">Admin Panel - Manage User Subscriptions</h2>
+
+        <div class="text-end mb-4">
+            <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">Admin Logout</a>
+        </div>
+
+        <div class="mb-4 p-3 border rounded-3 bg-light">
+            <h4 class="mb-3">Search User</h4>
+            <div class="input-group mb-3">
+                <input type="email" class="form-control rounded-start" id="userEmailSearch" placeholder="Enter user email to search" aria-label="User email">
+                <button class="btn btn-primary rounded-end" type="button" onclick="searchUser()">Search User</button>
+            </div>
+            <div id="searchMessage" class="mt-2"></div>
+        </div>
+
+        <div id="userDetails" class="user-details" style="display: none;">
+            <h4 class="mb-3">User Information</h4>
+            <p><strong>User ID:</strong> <span id="displayUserId"></span></p>
+            <p><strong>Email:</strong> <span id="displayUserEmail"></span></p>
+            <p><strong>Name:</strong> <span id="displayUserName"></span></p>
+            <p><strong>Chats Used:</strong> <span id="displayChatsUsed"></span></p>
+            <p><strong>Total Chats Allowed:</strong> <span id="displayTotalChatsAllowed"></span></p>
+            <p><strong>Paid Status:</strong> <span id="displayPaidStatus"></span></p>
+            <p><strong>Paid Until:</strong> <span id="displayPaidUntil"></span></p>
+            <p><strong>Active Subscription:</strong> <span id="displayActiveSubscription"></span></p>
+            <p><strong>Remaining Chats:</strong> <span id="displayRemainingChats"></span></p>
+
+            <hr>
+
+            <div class="mt-4">
+                <h4 class="mb-3">Update Payment Status</h4>
+                <div class="mb-3">
+                    <label for="chatAllowanceInput" class="form-label">Assign Chat Allowance (e.g., 5000 for paid, 10 for free):</label>
+                    <input type="number" class="form-control" id="chatAllowanceInput" value="5000" min="1">
+                </div>
+                <button class="btn btn-success w-100 mb-2" onclick="markUserPaid()">Mark User Paid & Assign Chats</button>
+                <button class="btn btn-warning w-100" onclick="markUserUnpaid()">Mark User Unpaid</button> <div id="markPaidMessage" class="mt-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eR0Q+MGa2jFtx17bTjsG" crossorigin="anonymous"></script>
+
+    <script>
+        // Function to display messages
+        function displayMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="alert alert-${type}" role="alert">${message}</div>`;
+            element.style.display = 'block';
+        }
+
+        // Function to clear messages
+        function clearMessage(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+            document.getElementById(elementId).style.display = 'none';
+        }
+
+        // Function to search for a user by email
+        async function searchUser() {
+            const email = document.getElementById('userEmailSearch').value;
+            const searchMessageDiv = document.getElementById('searchMessage');
+            clearMessage('searchMessage');
+            clearMessage('markPaidMessage'); // Clear messages from mark paid section
+            document.getElementById('userDetails').style.display = 'none'; // Hide details until found
+
+            if (!email) {
+                displayMessage('searchMessage', 'Please enter an email address.', 'warning');
+                return;
+            }
+
+            try {
+                // This fetch request goes to your Flask backend's /api/search_user endpoint
+                const response = await fetch(`/api/search_user?email=${encodeURIComponent(email)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayMessage('searchMessage', 'User found!', 'success');
+                    // Populate user details from the data received from Flask
+                    document.getElementById('displayUserId').textContent = data.id;
+                    document.getElementById('displayUserEmail').textContent = data.email;
+                    document.getElementById('displayUserName').textContent = data.name || 'N/A';
+                    document.getElementById('displayChatsUsed').textContent = data.chats_used;
+                    document.getElementById('displayTotalChatsAllowed').textContent = data.total_chats_allowed;
+                    document.getElementById('displayPaidStatus').textContent = data.paid ? 'Yes' : 'No';
+                    document.getElementById('displayPaidUntil').textContent = data.paid_until ? new Date(data.paid_until).toLocaleString() : 'N/A';
+                    document.getElementById('displayActiveSubscription').textContent = data.has_active_subscription ? 'Yes' : 'No';
+                    document.getElementById('displayRemainingChats').textContent = data.remaining_chats;
+
+                    // Pre-fill chat allowance input with current total_chats_allowed
+                    document.getElementById('chatAllowanceInput').value = data.total_chats_allowed;
+
+                    document.getElementById('userDetails').style.display = 'block'; // Show details
+                } else {
+                    displayMessage('searchMessage', data.error || 'Error searching user.', 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                displayMessage('searchMessage', 'An error occurred while searching. Please try again.', 'danger');
+            }
+        }
+
+        // Function to mark user as paid
+        async function markUserPaid() {
+            const email = document.getElementById('displayUserEmail').textContent; // Get email from displayed user
+            const totalChatsAllowed = document.getElementById('chatAllowanceInput').value;
+            const markPaidMessageDiv = document.getElementById('markPaidMessage');
+            clearMessage('markPaidMessage');
+
+            if (!email) {
+                displayMessage('markPaidMessage', 'No user selected. Please search for a user first.', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/mark_user_paid', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email, total_chats_allowed: parseInt(totalChatsAllowed) })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayMessage('markPaidMessage', data.message, 'success');
+                    // Re-search to update displayed details
+                    searchUser();
+                } else {
+                    displayMessage('markPaidMessage', data.error || 'Error marking user as paid.', 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                displayMessage('markPaidMessage', 'An error occurred while updating payment status. Please try again.', 'danger');
+            }
+        }
+
+        // NEW: Function to mark user as unpaid
+        async function markUserUnpaid() {
+            const email = document.getElementById('displayUserEmail').textContent; // Get email from displayed user
+            const markPaidMessageDiv = document.getElementById('markPaidMessage');
+            clearMessage('markPaidMessage');
+
+            if (!email) {
+                displayMessage('markPaidMessage', 'No user selected. Please search for a user first.', 'warning');
+                return;
+            }
+
+            // Optional: Add a confirmation dialog here
+            if (!confirm(`Are you sure you want to mark user ${email} as UNPAID? This will reset their chats and revoke paid access.`)) {
+                return; // User cancelled
+            }
+
+            try {
+                const response = await fetch('/api/mark_user_unpaid', { // NEW API ENDPOINT
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayMessage('markPaidMessage', data.message, 'success');
+                    // Re-search to update displayed details
+                    searchUser();
+                } else {
+                    displayMessage('markPaidMessage', data.error || 'Error marking user as unpaid.', 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                displayMessage('markPaidMessage', 'An error occurred while marking user unpaid. Please try again.', 'danger');
+            }
+        }
+    </script>
+</body>
+</html>
