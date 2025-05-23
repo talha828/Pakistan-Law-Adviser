@@ -46,14 +46,17 @@
     </div>
   </div>
 
-  <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg">
         <div class="modal-header text-white" style="background-color: #007bff;">
           <h5 class="modal-title fw-semibold" id="paymentModalLabel">Complete Your Payment to Unlock Access</h5>
         </div>
         <div class="modal-body">
-          <p>To continue, please send <strong>150PKR</strong> using one of the following payment methods:</p>
+          <p class="mb-3">
+            Your support helps me <strong>continuously improve and upgrade</strong> this tool, making it even more powerful and useful for <strong>real-life legal queries</strong>. Please consider supporting this initiative by paying <strong>100 PKR</strong>.
+          </p>
+          <p id="paymentModalMessage" class="mb-3"></p> <p>To continue, please send <strong>100PKR</strong> using one of the following payment methods:</p>
           <ul class="list-unstyled">
             <li class="mb-2">
               <strong>Phone Number:</strong> <span id="payment-number">03012070920</span>
@@ -68,7 +71,7 @@
             <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('03190347351')">Copy</button>
           </p>
           <div class="alert alert-warning mt-4 small">
-            Please note: Your chat limit will be reset immediately after your payment is verified. This payment grants access for <strong>1 month</strong>.
+            Please note: Your chat limit will be reset immediately after your payment is verified. This payment grants access for **1 month**.
           </div>
         </div>
         <div class="modal-footer justify-content-center "style="background-color: #f8f9fa;">
@@ -78,7 +81,7 @@
         </div>
       </div>
     </div>
-  </div>
+</div>
 
   <audio id="send-sound" src="{{ url_for('static', filename='assets/send.mp3') }}" preload="auto"></audio>
   <audio id="receive-sound" src="{{ url_for('static', filename='assets/receive.mp3') }}" preload="auto"></audio>
@@ -100,7 +103,7 @@
           <span class="active-subscription-text">Active Subscription</span>
           <span class="chats-remaining-text">Chats: {{ remaining_chats }} / {{ total_chats_allowed }}</span>
         {% else %}
-          <button onclick="showPaymentPopup()" class="pay-now-btn">Pay Now</button>
+          <button onclick="showPaymentPopup()" class="pay-now-btn">Support Me</button>
         {% endif %}
       </div>
     </div>
@@ -131,4 +134,32 @@
     </div>
   </div>
 </body>
+<script>
+      function showPaymentPopup(message = "Please complete your payment to continue.") {
+        const paymentModalElement = document.getElementById('paymentModal');
+        if (!paymentModalElement) {
+            console.error("Payment modal element not found!");
+            return;
+        }
+
+        // Update the message in the modal body if a specific message is provided
+        const paymentModalMessageElement = document.getElementById('paymentModalMessage');
+        if (paymentModalMessageElement) {
+            paymentModalMessageElement.innerHTML = `<strong class="text-danger">${message}</strong>`;
+        } else {
+            console.warn("Element with ID 'paymentModalMessage' not found in modal. Message might not be displayed.");
+        }
+
+        // Assuming Bootstrap's JavaScript is correctly loaded for this to work
+        const paymentModal = new bootstrap.Modal(paymentModalElement);
+        paymentModal.show();
+    }
+    copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            alert(`Copied: ${text}`);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    };
+</script>
 </html>
