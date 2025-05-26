@@ -3,6 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block description %}Ask legal questions and get answers from our AI trained on Pakistan law, including constitution, criminal, civil, and family law.{% endblock %}">
+  <meta name="keywords" content="Pakistan law, legal advisor, AI chatbot, Constitution of Pakistan, criminal law, family law">
+  <meta name="author" content="Talha Iqbal">
+
+  <!-- Open Graph for better social sharing -->
+  <meta property="og:title" content="{% block og_title %}Pakistan Law Advisor - Ask AI About Law{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Chat with AI trained on Pakistan's legal system. Free legal help instantly!{% endblock %}">
+  <meta property="og:image" content="{{ url_for('static', filename='img/law-og.jpg') }}">
+  <meta property="og:url" content="{{ request.url }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Pakistan Law Adviser</title>
 
   <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}" type="image/x-icon">

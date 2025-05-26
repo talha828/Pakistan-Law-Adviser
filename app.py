@@ -9,7 +9,7 @@ import secrets
 from datetime import datetime, timedelta # Import timedelta for date calculations
 from functools import wraps # Used for decorators
 import uuid # Imported for dummy user creation in db_init
-
+import openai
 # Third-Party Imports
 import requests
 from flask import (
@@ -22,6 +22,8 @@ from dotenv import load_dotenv
 # Local Application Imports
 from auth import auth_bp
 from models import db, User
+from openai import OpenAIError
+
 from chat_used import (
     PAID_TIER_CHAT_ALLOWANCE, is_chat_limit_reached,
     increment_chat_count, check_and_update_user_status,
@@ -233,74 +235,66 @@ def test_chat():
         total_chats_allowed=user.total_chats_allowed,
         is_active_subscription=user.has_active_subscription()
     )
+import openai
+
+# Set your OpenAI API Key
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    """
-    Handles user chat messages, checks limits, uses RAG, and generates responses.
-    """
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({"error": "Not logged in"}), 401
 
     user = User.query.get(user_id)
     if not user:
-        session.clear() # Clear potentially invalid session
+        session.clear()
         return jsonify({"error": "User not found. Please log in again."}), 404
 
-    # Crucial: Always update user's subscription status before checking limits
     check_and_update_user_status(user)
-    db.session.refresh(user) # Refresh user object to get latest data after status update
+    db.session.refresh(user)
 
-    # Check if chat limit is reached
     if is_chat_limit_reached(user):
         if user.has_active_subscription():
-            # User is paid but has exhausted their paid allowance
-            return jsonify({"error": f"You have used all your {user.total_chats_allowed} chats for this month. Your subscription is active until {user.paid_until.strftime('%Y-%m-%d')}. Please wait for renewal or contact support."}), 402
+            return jsonify({
+                "error": f"You have used all your {user.total_chats_allowed} chats for this month. Your subscription is active until {user.paid_until.strftime('%Y-%m-%d')}."
+            }), 402
         else:
-            # User is on the free tier and has exhausted their free allowance
-            return jsonify({"error": f"You have reached your free chat limit of {FREE_TIER_CHAT_LIMIT} chats. Please complete payment to unlock {PAID_TIER_CHAT_ALLOWANCE} more chats for 1 month!"}), 402
+            return jsonify({
+                "error": f"You have reached your free chat limit of {FREE_TIER_CHAT_LIMIT} chats. Please complete payment to unlock {PAID_TIER_CHAT_ALLOWANCE} more chats for 1 month!"
+            }), 402
 
-    # Increment chat count BEFORE processing the actual chat
-    # This prevents users from exceeding limits if the API call fails later
     increment_chat_count(user)
-    db.session.refresh(user) # Refresh user object after incrementing
+    db.session.refresh(user)
 
     query = request.form['message']
     if 'chat_history' not in session:
         session['chat_history'] = []
 
     session['chat_history'].append({'sender': 'user', 'text': query})
-    log_chat_message(user_id, 'user', query) # Pass user_id
+    log_chat_message(user_id, 'user', query)
 
     try:
-        # Step 1: Improve user question (using GROQ API)
+        # Step 1: Improve the user question using ChatGPT
         improve_prompt = f"""
-        You are a smart assistant that improves unclear or messy questions.
-        Convert the following question into a better, clearer, and more specific legal question related to Pakistani law:
+You are a smart assistant that improves unclear or messy questions.
+Convert the following question into a better, clearer, and more specific legal question related to Pakistani law:
 
-        "{query}"
+"{query}"
 
-        Make sure the improved version is very clear, properly structured, and contextually correct.
-        """
-        improve_response = requests.post(
-            GROQ_API_URL,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {GROQ_API_KEY}"
-            },
-            json={
-                "model": GROQ_MODEL,
-                "messages": [{"role": "user", "content": improve_prompt}]
-            }
+Make sure the improved version is very clear, properly structured, and contextually correct.
+"""
+
+        improve_response = openai.chat.completions.create(
+            model="gpt-4.1-nano",
+            messages=[{"role": "user", "content": improve_prompt}]
         )
-        improve_response.raise_for_status() # Raise an exception for HTTP errors
-        improved_question = improve_response.json()['choices'][0]['message']['content'].strip()
-        log_chat_message(user_id, 'user', improved_question) # Pass user_id
+        improved_question = improve_response.choices[0].message.content.strip()
+        log_chat_message(user_id, 'user', improved_question)
 
-        # Step 2: Get context from FAISS (assuming rag_helper functions are available)
-        context = "No specific legal context available. Please consult a qualified legal professional for advice on Pakistani law." # Default context
-        if embed_query and load_faiss_index and search_index: # Check if RAG functions are imported
+        # Step 2: Get context from FAISS
+        context = "No specific legal context available. Please consult a qualified legal professional for advice on Pakistani law."
+        if embed_query and load_faiss_index and search_index:
             try:
                 index, chunks = load_faiss_index()
                 embedding = embed_query(improved_question)
@@ -311,20 +305,27 @@ def chat():
         else:
             print("Warning: RAG helper functions not available. Using dummy context.")
 
-
         # Step 3: Final prompt with context
-        final_prompt = f"""You are a helpful and friendly legal expert in Pakistani law. Your goal is to provide clear, easy-to-understand, and practical answers.
-Always use the context provided to answer the question, but present the information in a way that is approachable for someone without legal background.
+        final_prompt = f"""You are a helpful, friendly, and ethical legal expert specializing in Pakistani law. Your goal is to provide clear, easy-to-understand, and practical answers that are appropriate for a wide range of users — including laypeople, students, and even legal professionals.
+
+Your tone should adapt to the type of question:
+- If someone seems confused, be calm and reassuring — like a teacher explaining to a student.
+- If someone is emotionally involved (e.g., a husband asking about alimony), be thoughtful and balanced — acknowledge their concerns but explain legal duties honestly.
+- If someone sounds like a lawyer or law student, you can include a bit more detail and references.
 
 Here's how to structure your answer:
-- **Start with a friendly and empathetic tone.** Acknowledge the user's situation or question.
-- **Explain legal concepts simply:** Avoid jargon. If a legal term is necessary, explain it clearly in simple English.
-- **Use bullet points for clarity** where appropriate, but ensure the explanations flow well like a conversation.
-- **Focus on practical implications:** What does the law mean for the user in real-world terms?
-- **Always use the latest law if present and rules.**
-- **Mention relevant legal sections or articles** for accuracy, but integrate them smoothly into the explanation, rather than just listing them.
-- **If the question is about avoiding legal obligations (like alimony):** Explain the legal framework and potential legal avenues or considerations within the law, rather than endorsing avoidance. Focus on legal rights, obligations, and the process involved.
-- **Conclude by suggesting professional advice** if the matter is complex or requires specific action.
+- 🟢 **Start with a friendly and empathetic tone.** Acknowledge the user's concern.
+- 📘 **Explain legal concepts in simple terms:** Avoid legal jargon. If legal terms are needed, explain them clearly in Urdu or English.
+- 📌 **Use bullet points or short paragraphs for clarity**, but keep it conversational.
+- ⚖️ **Be neutral and ethical:** If the question is about avoiding legal obligations (like alimony), explain the lawful options and considerations, but **do not promote dishonest behavior**. Focus on:
+  - Rights
+  - Legal procedures
+  - Practical steps someone *can* take *within* the law
+- 📜 **Mention relevant laws or sections**, but weave them naturally into your explanation.
+- 🔍 **Focus on real-life implications:** What does this mean for the user? What can they actually do?
+- 📞 **Conclude with advice to consult a lawyer**, especially for complex or personal matters.
+
+Always base your answer on the context provided below.
 
 Context:
 {context}
@@ -333,27 +334,18 @@ Question:
 {improved_question}
 """
 
-        # Step 4: Get answer (using GROQ API)
-        response = requests.post(
-            GROQ_API_URL,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {GROQ_API_KEY}"
-            },
-            json={
-                "model": GROQ_MODEL,
-                "messages": [{"role": "user", "content": final_prompt}]
-            }
+        # Step 4: Final answer using ChatGPT
+        response = openai.chat.completions.create(
+            model="gpt-4.1-nano",
+            messages=[{"role": "user", "content": final_prompt}]
         )
-        response.raise_for_status() # Raise an exception for HTTP errors
-        answer = response.json()['choices'][0]['message']['content']
+        answer = response.choices[0].message.content
         session['chat_history'].append({'sender': 'bot', 'text': answer})
-        log_chat_message(user_id, 'bot', answer) # Pass user_id
+        log_chat_message(user_id, 'bot', answer)
 
-        # Re-render the chatscreen with updated chat history and user info
-        user = User.query.get(session.get("user_id")) # Get latest user object
-        check_and_update_user_status(user) # Final check before rendering
-        db.session.refresh(user) # Refresh user object to get latest data
+        user = User.query.get(session.get("user_id"))
+        check_and_update_user_status(user)
+        db.session.refresh(user)
 
         return render_template(
             "index.html",
@@ -367,19 +359,14 @@ Question:
             is_active_subscription=user.has_active_subscription()
         )
 
-    except requests.exceptions.RequestException as req_err:
-        error_msg = f"⚠️ API Error: Could not connect to the AI service. Details: {str(req_err)}"
+    except OpenAIError as req_err:
+        error_msg = f"⚠️ API Error: Could not connect to ChatGPT. Details: {str(req_err)}"
         print(error_msg)
         session['chat_history'].append({'sender': 'bot', 'text': error_msg})
-        log_chat_message(user_id, 'bot', error_msg) # Pass user_id
-        # For simplicity, we'll just return the error. Consider chat refund logic here.
+        log_chat_message(user_id, 'bot', error_msg)
         return jsonify({"response": error_msg}), 500
-    except Exception as e:
-        error_msg = f"⚠️ An unexpected error occurred: {str(e)}"
-        print(error_msg)
-        session['chat_history'].append({'sender': 'bot', 'text': error_msg})
-        log_chat_message(user_id, 'bot', error_msg) # Pass user_id
-        return jsonify({"response": error_msg}), 500
+
+
 
 ## --- Admin Panel Routes ---
 @app.route('/admin_login', methods=['GET', 'POST'])
