@@ -235,8 +235,8 @@ body {
     letter-spacing: 0.1cap;
     max-width: 80%;
     position: relative;
-    word-wrap: break-word;
-    white-space: pre-wrap; /* Preserve whitespace and line breaks */
+    word-wrap: break-word; 
+    white-space: pre-wrap; 
     transition: all 0.3s ease, transform 0.2s ease;
 }
 
