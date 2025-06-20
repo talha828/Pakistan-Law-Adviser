@@ -1,165 +1,179 @@
-/* Base Styles with Smooth Transitions */
+/* Base Styles for a Minimal, Clean, and Luxurious Feel - Dark Theme */
 body {
     margin: 0;
     font-family: 'Mulish', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: #252526;
-    color: white;
+    background-color: #0d0d0d; /* Even darker, almost pure black background */
+    color: white; /* Soft white text */
     min-height: 100vh;
-    background-image: url("https://mos.org.pk/wp-content/uploads/2021/07/SRTERTRETRET_1024x1024.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-attachment: fixed;
+    background-image: url("https://i.postimg.cc/gJR5fDhD/14141-modified.png"); /* Existing background */
+    background-repeat: -repeat;
+    background-size: contain;
+    background-attachment: local;
     position: relative;
     transition: background-color 0.5s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 * {
-    box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); /* Smoother transitions */
 }
 
-/* Chat Window Container with Entrance Animation */
+/* Chat Window Container */
 .chat_window {
     position: relative;
     width: 100%;
-    max-width: 100%; /* Max width for desktop */
-    height: 100svh; /* Use svh for more consistent mobile viewport height */
-    background-color: #252526;
-    margin: 0 auto; /* Center horizontally */
+    max-width: 850px;
+    height: 90vh;
+    min-height: 580px;
+    background-color: #1a1a1a; /* Dark gray inner background */
+    margin: 0 auto;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    animation: fadeInUp 0.6s ease-out forwards;
-    transform: translateY(20px);
-    opacity: 0;
-    border-radius: 0px; /* Added rounded corners for the main chat window */
-}
-
-@keyframes fadeInUp {
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+    border-radius: 12px;
 }
 
 /* Top Menu Layout and Styling */
 .top_menu {
-    background-color: #1e1e1e;
-    padding: 15px 20px;
-    box-shadow: 0 1px 30px rgba(0, 0, 0, 0.1);
+    background-color: #121212; /* Matches body background for seamless look */
+    padding: 10px 15px; /* Reduced padding for compactness */
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
     display: flex;
-    justify-content: space-between; /* Space out left, center, right sections */
+    justify-content: space-between;
     align-items: center;
-    min-height: 80px;
-    transition: all 0.3s ease;
-    flex-wrap: nowrap; /* Prevent wrapping on desktop, handle in media query */
-    border-top-left-radius: 12px; /* Match chat_window border-radius */
+    min-height: 60px; /* Further reduced height to minimize header takeover */
+    flex-wrap: wrap;
+    border-top-left-radius: 12px;
     border-top-right-radius: 12px;
+    border-bottom: 1px solid #2b2b2b; /* Subtle, thin separator */
 }
 
-.top_menu:hover {
-    box-shadow: 0 2px 40px rgba(0, 0, 0, 0.2);
-}
-
-.top_menu .top-menu-left,
-.top_menu .top-menu-right {
+.top_menu .user-info {
     display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.top_menu .top-menu-center {
-    flex-grow: 1; /* Allows center section to take available space */
-    text-align: center;
+    flex-direction: column; /* Column layout */
+    align-items: flex-start; /* Align text to the left */
+    gap: 0px;
+    white-space: nowrap; /* Prevent wrapping for user info */
 }
 
 .top_menu .profile-pic {
     border-radius: 50%;
-    width: 35px;
-    height: 35px;
+    width: 30px; /* Smaller profile picture */
+    height: 30px;
     object-fit: cover;
-    border: 2px solid #1a73e8;
+    border: 1px solid #3a3a3a; /* Subtle gray border */
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.05); /* Minimal glow */
+    margin-bottom: 2px; /* Reduced space */
 }
 
 .top_menu .user-name {
-    color: #ffffff;
+    color: #e0e0e0;
     font-weight: 500;
-    font-size: 15px;
+    font-size: 13px; /* Smaller font size */
 }
 
 .top_menu .logout-btn {
     background: none;
     border: none;
-    color: #f8d7da; /* Light red for logout */
-    text-decoration: underline;
+    color: #999999; /* Neutral gray for logout */
+    text-decoration: none;
     cursor: pointer;
-    font-size: 13px;
-    margin-left: 10px;
-    transition: color 0.3s ease;
+    font-size: 11px; /* Smaller font size */
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    margin-left: 0; /* Align with username */
+    margin-top: 1px; /* Minimal space */
 }
 
 .top_menu .logout-btn:hover {
-    color: #dc3545; /* Darker red on hover */
+    color: #cccccc; /* Lighter gray on hover */
 }
+
 .top_menu .heading-position {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 7px;
+    gap: 1px; /* Minimal gap */
+    flex-grow: 1; /* Allows title to take available space */
+    text-align: center;
 }
 
 .top_menu .title {
-    color: #ffffff;
-    font-size: 20px;
+    color: white;
+    font-size: 18px; /* Standardized font size */
     font-weight: 600;
-    margin: 0; /* Remove default margins */
-    animation: textGlow 3s infinite alternate;
+    margin: 0;
+    gap: 10px; /* Minimal gap */
+    letter-spacing: 0.1px;
+    display: flex;
+    align-items: center;
+}
+
+.top_menu .title .fas {
+    color: #999999; /* Neutral gray icon */
+    margin-right: 5px; /* Reduced margin */
+    font-size: 16px; /* Adjusted icon size */
 }
 
 .top_menu .disclaimer {
-    color: #ffffff;
-    font-size: 12px;
-    margin: 5px 0 0; /* Adjust margin as needed */
-    font-weight: 200;
-    letter-spacing: 0.1cap;
+    color: #808080; /* Darker gray for subtlety */
+    font-size: 12px; /* Even smaller font */
+    margin: 1px 0 0; /* Minimal margin */
+    font-weight: 300;
+    letter-spacing: 0.05px;
+    white-space: nowrap; /* Prevent wrapping */
 }
 
 .payment-status-container {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column; /* Column layout */
+    align-items: flex-end; /* Align text to the right */
+    gap: 0px;
+    white-space: nowrap; /* Prevent wrapping for payment info */
 }
 
 .active-subscription-text {
-    color: #28a745; /* Green for active subscription */
-    font-weight: 600;
-    font-size: 14px;
+    color: #66cc66; /* Subtle green for active status */
+    font-weight: 500;
+    font-size: 11px; /* Smaller font size */
+    display: flex;
+    align-items: center;
+    margin-bottom: 1px; /* Minimal space */
 }
 
 .chats-remaining-text {
-    color: #ffffff;
-    font-size: 13px;
+    color: #c0c0c0;
+    font-size: 10px; /* Smaller font size */
     font-weight: 400;
+    margin-bottom: 2px; /* Minimal space */
 }
 
 .pay-now-btn {
-    background-color: #1a73e8;
+    background-color: #4a4a4a; /* Dark gray for button */
     color: white;
     border: none;
-    border-radius: 8px;
-    padding: 8px 15px;
+    border-radius: 4px; /* Minimal rounded corners */
+    padding: 5px 10px; /* Reduced padding */
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px; /* Smaller font size */
     font-weight: 500;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    display: flex;
+    align-items: center;
+    margin-top: 0;
 }
 
 .pay-now-btn:hover {
-    background-color: #0d62c9;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(26, 115, 232, 0.3);
+    background-color: #606060; /* Lighter gray on hover */
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .pay-now-btn:active {
@@ -167,55 +181,45 @@ body {
     box-shadow: none;
 }
 
-
-@keyframes textGlow {
-    0% {
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-    }
-    100% {
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    }
-}
-
-/* Messages Area with Smooth Scrolling */
+/* Messages Area */
 .messages {
     flex: 1;
-    padding: 20px;
-    overflow-y: overlay;
-    background-color: #252526;
+    padding: 15px; /* Slightly reduced padding */
+    overflow-y: auto;
+    background-color: #1a1a1a; /* Matches chat window background */
     scroll-behavior: smooth;
-    height: calc(100vh - 160px); /* Adjusted height: 80px (top_menu) + 80px (bottom_wrapper) = 160px */
-    transition: background-color 0.5s ease;
+    /* Calculate height to ensure footer is visible and header doesn't overlap */
+    height: calc(100% - 60px - 60px - 50px); /* top_menu_min-height + bottom_wrapper_min-height + footer_min-height */
 }
 
 .messages::-webkit-scrollbar {
-    width: 6px;
+    width: 5px; /* Thinner scrollbar */
 }
 
 .messages::-webkit-scrollbar-thumb {
-    background-color: #1a73e8;
-    border-radius: 3px;
+    background-color: #666666; /* Neutral gray scrollbar */
+    border-radius: 2.5px;
 }
 
 .messages::-webkit-scrollbar-track {
-    background-color: #2d2d30;
+    background-color: #2b2b2b; /* Darker track */
 }
 
-/* Enhanced Message Animations */
+/* Message Animations and Styles */
 .message {
-    margin-bottom: 15px;
+    margin-bottom: 12px; /* Reduced margin */
     display: flex;
     flex-direction: column;
     opacity: 0;
-    transform: scale(0.95);
-    animation: messageAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    animation-delay: calc(var(--i) * 0.1s); /* Use a CSS variable for staggered animation */
+    transform: translateY(5px); /* Less dramatic animation */
+    animation: messageFadeIn 0.25s ease-out forwards; /* Faster fade-in */
+    animation-delay: var(--i);
 }
 
-@keyframes messageAppear {
+@keyframes messageFadeIn {
     to {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0);
     }
 }
 
@@ -229,112 +233,94 @@ body {
 
 .message .text {
     display: inline-block;
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-size: 14px;
-    letter-spacing: 0.1cap;
-    max-width: 80%;
+    padding: 8px 12px; /* Reduced padding */
+    border-radius: 6px; /* Less rounded */
+    font-size: 13.5px; /* Adjusted font size */
+    line-height: 1.4;
+    max-width: 70%; /* Smaller max-width for more compact messages */
     position: relative;
-    word-wrap: break-word; 
-    white-space: pre-wrap; 
-    transition: all 0.3s ease, transform 0.2s ease;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Subtle shadow */
 }
 
 .message.left .text {
-    background-color: #2d2d30;
-    color: white;
-    border-bottom-left-radius: 4px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #2b2b2b; /* Dark gray for bot message background */
+    color: #e0e0e0;
+    border-bottom-left-radius: 2px;
 }
 
 .message.right .text {
-    background-color: #1a73e8;
+    background-color: #4a4a4a; /* Slightly lighter gray for user message */
     color: white;
-    border-bottom-right-radius: 4px;
-    box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.1);
+    border-bottom-right-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .message .text:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* Advanced Typing Indicator */
+/* Typing Indicator */
 .typing-indicator {
     display: inline-flex;
     align-items: center;
-    padding: 8px 15px; /* More padding for a softer look */
-    background: #2d2d30;
-    border-radius: 20px; /* Slightly more rounded */
-    margin: 5px 0;
-    max-width: 120px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    animation: pulse 2s infinite ease-in-out;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.02);
-    }
-}
-
-.typing-indicator-dots {
-    display: flex;
-    gap: 6px;
-    padding: 0 5px;
+    padding: 6px 10px; /* Reduced padding */
+    background: #2b2b2b;
+    border-radius: 14px; /* Less rounded */
+    margin: 4px 0;
+    max-width: 80px; /* Reduced width */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    animation: none;
 }
 
 .typing-dot {
-    width: 8px;
-    height: 8px;
+    width: 6px; /* Smaller dots */
+    height: 6px;
     border-radius: 50%;
-    background: #1a73e8;
-    animation: typingAnimation 1.4s infinite ease-in-out;
+    background: #666666; /* Neutral gray for dots */
+    margin: 0 1.5px;
+    animation: typingAnimation 0.9s infinite ease-in-out; /* Faster animation */
 }
-.typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+.typing-dot:nth-child(2) { animation-delay: 0.08s; }
+.typing-dot:nth-child(3) { animation-delay: 0.16s; }
 
 
 @keyframes typingAnimation {
     0%, 60%, 100% {
         transform: translateY(0) scale(1);
-        opacity: 0.6;
+        opacity: 0.4;
     }
     30% {
-        transform: translateY(-4px) scale(1.2);
+        transform: translateY(-1.5px) scale(1.01); /* More subtle bounce */
         opacity: 1;
     }
 }
 
-/* Input Area with Interactive Effects */
+/* Input Area */
 .bottom_wrapper {
-    margin-bottom: 30px; /* Space for the footer */;
-    background-color: #252526;
-    padding: 15px;
+    background-color: #121212; /* Matches header background */
+    padding: 8px 15px; /* Reduced padding */
     display: flex;
-    align-items: center; /* Vertically align items */
-    gap: 10px;
-    border-top: 1px solid #3e3e42;
-    min-height: 80px; /* Ensure consistent height */
-    position: relative; /* For absolute positioning of footer */
-    transition: all 0.3s ease;
-    border-bottom-left-radius: 12px; /* Match chat_window border-radius */
+    align-items: center;
+    gap: 8px; /* Reduced gap */
+    border-top: 1px solid #2b2b2b;
+    min-height: 60px; /* Reduced height */
+    border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
 }
 
 .message_input_wrapper {
     flex: 1;
     min-width: 0;
-    animation: inputSlideIn 0.5s ease-out;
+    animation: inputSlideIn 0.3s ease-out;
 }
 
 @keyframes inputSlideIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(5px);
     }
     to {
         opacity: 1;
@@ -344,66 +330,72 @@ body {
 
 .message_input {
     width: 100%;
-    height: 50px;
-    padding: 0 15px;
-    background-color: #2d2d30;
-    border: none;
-    border-radius: 10px;
-    color: white;
-    caret-color: #1a73e8;
+    height: 40px; /* Smaller input */
+    padding: 0 14px;
+    background-color: #2b2b2b; /* Darker input background */
+    border: 1px solid #3a3a3a; /* Subtle border */
+    border-radius: 20px; /* Slightly less pill-shaped */
+    color: #e0e0e0;
+    caret-color: #999999; /* Neutral gray caret */
     outline: none;
     font-family: 'Mulish', sans-serif;
-    transition: all 0.3s ease;
+    font-size: 13px; /* Adjusted font size */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.message_input::placeholder {
+    color: #a0a0a0;
 }
 
 .message_input:focus {
-    box-shadow: 0 0 0 2px #1a73e8;
-    background-color: #333337;
+    box-shadow: 0 0 0 1.5px #666666; /* Neutral gray glow on focus */
+    background-color: #3a3a3a;
+    border-color: #666666;
 }
 
 button.no-style {
-  all: unset; /* Resets all browser default button styles */
+  all: unset;
   cursor: pointer;
 }
 
 .send_message {
-    width: 100px;
-    height: 50px;
-    background-color: #1a73e8;
+    width: 80px; /* Smaller button */
+    height: 40px;
+    background-color: #4a4a4a; /* Dark gray send button */
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 16px;
-    transition: all 0.3s ease, transform 0.1s ease;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Mulish', sans-serif;
-    font-weight: 500;
     position: relative;
     overflow: hidden;
 }
 
 .send_message:hover {
-    background-color: #0d62c9;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(26, 115, 232, 0.3);
+    background-color: #606060;
+    transform: translateY(-0.5px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .send_message:active {
     transform: translateY(0);
 }
 
-/* Ripple effect on click */
+/* Ripple effect on click (subtle) */
 .send_message::after {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 5px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.5);
+    width: 3px; /* Smaller ripple */
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2); /* More subtle ripple */
     opacity: 0;
     border-radius: 100%;
     transform: scale(1, 1) translate(-50%, -50%);
@@ -411,62 +403,54 @@ button.no-style {
 }
 
 .send_message:focus:not(:active)::after {
-    animation: ripple 0.6s ease-out;
+    animation: ripple 0.3s ease-out; /* Faster ripple */
 }
 
 @keyframes ripple {
     0% {
         transform: scale(0, 0);
-        opacity: 0.5;
+        opacity: 0.2;
     }
     100% {
-        transform: scale(20, 20);
+        transform: scale(10, 10); /* Smaller ripple expansion */
         opacity: 0;
     }
 }
 
-/* Footer with Subtle Animation */
+/* Footer */
 .footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
+    position: relative; /* Keep as relative to ensure it's part of the flex column and visible */
     width: 100%;
-    background-color: #1e1e1e; /* Match top menu background */
-    padding: 10px 0;
+    background-color: #121212; /* Matches top menu */
+    padding: 8px 0; /* Reduced padding */
     text-align: center;
     z-index: 10;
-    animation: fadeIn 1s ease-in-out forwards;
-    animation-delay: 0.5s;
-    opacity: 0;
-    color: #ffffff;
-    border-top: 1px solid #3e3e42; /* Add a subtle border */
-    border-bottom-left-radius: 12px; /* Match chat_window border-radius */
+    color: #f3f3f3; /* Darker text for subtlety */
+    border-top: 1px solid #2b2b2b;
+    border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
-}
-
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-    }
-}
-
-.footer .footer_content {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 20px;
+    min-height: 40px; /* Reduced min-height to take less space */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .footer h3 {
-    font-size: 14px;
+    font-size: 12px; /* Smaller font size */
     margin: 0;
-    font-weight: 400;
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
 }
 
 .footer h3 a {
-    color: #1a73e8; /* Blue link color */
+    color: #999999; /* Neutral gray link */
     text-decoration: none;
     position: relative;
     overflow: hidden;
+    font-weight: 400;
 }
 
 .footer h3 a::after {
@@ -476,10 +460,10 @@ button.no-style {
     left: 0;
     width: 100%;
     height: 1px;
-    background: #1a73e8;
+    background: #999999;
     transform: scaleX(0);
     transform-origin: right;
-    transition: transform 0.3s ease;
+    transition: transform 0.15s ease; /* Faster underline */
 }
 
 .footer h3 a:hover::after {
@@ -487,304 +471,413 @@ button.no-style {
     transform-origin: left;
 }
 
-/* Text Formatting Animations */
+/* Text Formatting in Messages */
 .message .text h4 {
-    color: #ffffff;
-    margin: 10px 0 5px 0;
-    font-weight: 700;
-    animation: textFadeIn 0.5s ease-out;
+    color: #cccccc; /* Lighter gray for headings */
+    margin: 5px 0; /* Reduced margin */
+    font-weight: 600;
+    font-size: 14px; /* Adjusted font size */
+    animation: textFadeIn 0.25s ease-out;
+    display: flex;
+    align-items: center;
+}
+
+.message .text p {
+    margin-bottom: 5px;
+    font-size: 13.5px;
+    line-height: 1.3;
+}
+
+.message .text ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 8px;
+}
+
+.message .text ul li {
+    position: relative;
+    padding-left: 16px; /* Reduced padding */
+    margin-bottom: 4px;
+    font-size: 13.5px;
+    line-height: 1.2;
+}
+
+.message .text ul li .fas {
+    position: absolute;
+    left: 0;
+    top: 1.5px;
+    color: #999999; /* Neutral gray for list icons */
+    font-size: 11px;
 }
 
 .message .text strong {
     color: #ffffff;
-    font-weight: 700;
+    font-weight: 600;
     position: relative;
 }
 
-.message .text strong::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: #1a73e8;
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 0.3s ease;
-}
-
-.message .text:hover strong::after {
-    transform: scaleX(1);
-    transform-origin: left;
-}
-
-@keyframes textFadeIn {
-    from {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Section Divider Animation */
+/* Section Divider */
 .message .text .section-divider {
-    border-top: 1px dashed #3e3e42;
-    padding: 15px;
+    border-top: 1px solid #3a3a3a; /* Solid, darker gray divider */
+    margin: 10px 0; /* Reduced margin */
     position: relative;
     overflow: hidden;
 }
 
-.message .text .section-divider::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background: #1a73e8;
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.6s ease;
+/* Example Questions Styling */
+.example-questions .btn {
+    background-color: #2b2b2b; /* Dark gray consistent background */
+    color: #d0d0d0;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 400;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
-.message .text:hover .section-divider::after {
-    transform: scaleX(1);
+.example-questions .btn:hover {
+    background-color: #4a4a4a; /* Lighter gray on hover */
+    border-color: #4a4a4a;
+    color: white;
+    transform: translateY(-0.5px);
+    box-shadow: 0 1.5px 4px rgba(0, 0, 0, 0.25);
+}
+
+
+/* Modal Overrides */
+.modal-content {
+    background-color: #1a1a1a; /* Darker background for modals */
+    color: #e0e0e0;
+    border-radius: 8px; /* Less rounded */
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.8); /* Stronger shadow */
+    font-family: 'Mulish', sans-serif;
+}
+
+.modal-header {
+    padding: 8px 12px; /* Reduced padding */
+    background-color: #121212;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.modal-title {
+    color: white;
+    font-weight: 500;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+    opacity: 0.5;
+}
+
+.modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 12px; /* Reduced padding */
+    color: #c0c0c0;
+}
+
+.modal-body ul li {
+    margin-bottom: 5px;
+}
+
+.modal-body ul li .fas {
+    margin-right: 5px;
+    color: #999999;
+}
+
+.modal-footer {
+    padding: 8px 12px; /* Reduced padding */
+    background-color: #121212;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.modal-footer .btn-primary {
+    background-color: #4a4a4a;
+    border-color: #4a4a4a;
+    font-weight: 500;
+    padding: 6px 15px; /* Reduced padding */
+    border-radius: 4px;
+}
+
+.modal-footer .btn-primary:hover {
+    background-color: #606060;
+    border-color: #606060;
 }
 
 /* Payment Modal Specific Styles */
 #paymentModal .modal-header {
-    background-color: #007bff; /* Primary blue for header */
-    color: white;
-    border-bottom: none;
-    text-align: center;
-    justify-content: center;
-    padding: 15px 20px;
-    border-top-left-radius: calc(15px - 1px); /* Match modal-content border-radius */
-    border-top-right-radius: calc(15px - 1px);
-}
-
-#paymentModal .modal-content {
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    overflow: hidden; /* Ensure rounded corners clip content */
+    background-color: #4a4a4a; /* Dark gray header */
+    justify-content: flex-start;
 }
 
 #paymentModal .modal-body {
-    background-color: #252526;
-    font-family: 'Mulish', sans-serif;
-    color: #ffffff;
-    padding: 20px;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
 }
 
 #paymentModal .modal-body .list-unstyled strong {
-    color: #1a73e8; /* Blue for strong text in list */
+    color: #cccccc; /* Lighter gray for strong text */
 }
 
 #paymentModal .modal-body .btn-outline-secondary {
-    color: #6c757d;
-    border-color: #6c757d;
-    font-size: 0.85rem;
-    padding: 0.25rem 0.6rem;
-    border-radius: 5px;
-    transition: all 0.2s ease;
+    color: #808080;
+    border-color: #808080;
+    font-size: 0.7rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 2px;
 }
 
 #paymentModal .modal-body .btn-outline-secondary:hover {
     color: #ffffff;
-    background-color: #6c757d;
+    background-color: #808080;
 }
 
 #paymentModal .modal-footer {
-    background-color: #f8f9fa; /* Light gray for footer */
-    border-top: 1px solid #e9ecef;
-    padding: 15px 20px;
+    background-color: #121212;
     justify-content: center;
-    border-bottom-left-radius: calc(15px - 1px);
-    border-bottom-right-radius: calc(15px - 1px);
 }
 
-#paymentModal .modal-footer .btn-success {
-    background-color: #1a73e8;
-    border-color: #1a73e8;
-    font-weight: 600;
-    padding: 10px 25px;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+#paymentModal .modal-footer .btn-primary {
+    background-color: #4a4a4a;
+    border-color: #4a4a4a;
+    font-weight: 500;
+    padding: 7px 18px;
 }
 
-#paymentModal .modal-footer .btn-success:hover {
-    background-color: #3281e9;
-    border-color: #3281e9;
+#paymentModal .modal-footer .btn-primary:hover {
+    background-color: #606060;
+    border-color: #606060;
+}
+
+#paymentModal .modal-body .alert-danger {
+    background-color: #ffdddd; /* Lighter red background */
+    color: #cc3333; /* Darker red text */
+    border-color: #cc3333;
+    padding: 7px;
+    border-radius: 4px;
+    font-weight: 500;
 }
 
 #paymentModal .modal-body .alert-warning {
-    background-color: #ffeeba; /* Light yellow background */
-    color: #856404; /* Dark yellow text */
-    border-color: #ffeeba;
-    padding: 12px;
-    border-radius: 8px;
+    background-color: #fff9e6; /* Lighter yellow background */
+    color: #8a6d3b; /* More muted yellow text */
+    border-color: #8a6d3b;
+    padding: 7px;
+    border-radius: 4px;
+    gap: 5px;
+}
+#paymentModal .modal-body .alert-warning .fas {
+    font-size: 0.9em;
+    color: #8a6d3b;
 }
 
 
-/* Responsive Adjustments with Smooth Transitions */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
+    body {
+        align-items: flex-start;
+    }
+
     .chat_window {
-        max-width: 100%; /* Ensure it takes full width on smaller screens */
-        border-radius: 0; /* Remove rounded corners on mobile for full screen effect */
+        max-width: 100%;
+        height: 100vh;
+        min-height: auto;
+        border-radius: 0;
+        box-shadow: none;
     }
 
     .top_menu {
-        flex-direction: column; /* Stack items vertically */
-        height: auto;
-        padding: 15px; /* Adjust padding */
-        border-top-left-radius: 0; /* Remove rounded corners */
+        flex-direction: column;
+        padding: 8px;
+        min-height: auto; /* Allow height to adjust */
+        border-top-left-radius: 0;
         border-top-right-radius: 0;
     }
 
-    .top_menu .top-menu-left,
-    .top_menu .top-menu-right,
-    .top_menu .top-menu-center {
-        width: 100%; /* Take full width */
-        justify-content: center; /* Center content */
-        margin-bottom: 10px; /* Space between stacked items */
+    .top_menu .user-info,
+    .top_menu .heading-position,
+    .top_menu .payment-status-container {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 5px;
     }
-    .top_menu .top-menu-left { order: 1; } /* Order them for better mobile layout */
-    .top_menu .top-menu-center { order: 2; margin-bottom: 5px; }
-    .top_menu .top-menu-right { order: 3; margin-bottom: 0; } /* No margin bottom for the last item */
-
 
     .top_menu .user-info {
-        gap: 4px;
-        text-align: center; /* Center text on mobile */
+        order: 1;
+        margin-bottom: 8px;
+        align-items: center; /* Center horizontally on mobile */
     }
+    .top_menu .heading-position {
+        order: 2;
+        margin-bottom: 5px;
+    }
+    .top_menu .payment-status-container {
+        order: 3;
+        margin-bottom: 0;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+        align-items: center; /* Center horizontally on mobile */
+    }
+
     .top_menu .profile-pic {
-        visibility: hidden; /* Hide profile picture on mobile */
-        width: 30px;
-        height: 30px;
+        width: 25px;
+        height: 25px;
+        border-width: 1px;
     }
+
     .top_menu .user-name {
-        font-size: 14px;
+        font-size: 12px;
     }
     .top_menu .logout-btn {
-        font-size: 12px;
+        font-size: 10px;
+        margin-left: 0;
     }
 
     .top_menu .title {
-        font-size: 18px;
+        font-size: 16px;
     }
-    .top_menu .p {
-        text-align: center;
-        font-size: 18px;
-        justify-content: center;
-    }
-
     .top_menu .disclaimer {
+        font-size: 8px;
+    }
+
+    .pay-now-btn {
+        padding: 4px 8px;
         font-size: 11px;
-        margin-top: 0;
-    }
-
-    .payment-status-container {
-        flex-direction: column; /* Stack text and button if needed */
-        gap: 5px;
-    }
-
-    .active-subscription-text, .chats-remaining-text, .pay-now-btn {
-        font-size: 13px;
-        padding: 6px 12px;
     }
 
     .messages {
-        height: calc(100vh - 220px); /* Adjust for smaller top/bottom bars (approx 80px top + 80px bottom + 60px footer) */
-        padding: 15px;
+        height: calc(100vh - 120px); /* Adjusted for mobile header/footer heights */
+        padding: 8px;
     }
 
     .message .text {
-        max-width: 90%; /* Allow messages to take more width */
-        font-size: 13px; /* Slightly smaller font on mobile */
-        padding: 10px 14px;
+        max-width: 95%;
+        font-size: 12.5px;
+        padding: 7px 10px;
     }
 
     .typing-indicator {
-        max-width: 100px;
-        padding: 10px 15px;
+        max-width: 70px;
+        padding: 5px 8px;
     }
 
     .bottom_wrapper {
-        padding: 10px;
-        min-height: 70px; /* Adjusted height for mobile input area */
-        border-bottom-left-radius: 0; /* Remove rounded corners */
+        padding: 5px;
+        min-height: 50px;
+        border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
+        flex-wrap: nowrap;
     }
 
     .message_input {
-        height: 45px;
+        height: 35px;
+        font-size: 12px;
     }
     .send_message {
-        width: 80px; /* Smaller send button */
-        height: 45px;
-        font-size: 14px;
+        width: 60px;
+        height: 35px;
+        font-size: 12px;
     }
 
     .footer {
-        padding: 8px 0;
-        border-bottom-left-radius: 0; /* Remove rounded corners */
+        padding: 4px 0;
+        border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
+        min-height: 35px; /* Reduced min-height for mobile */
     }
     .footer h3 {
-        font-size: 12px;
+        font-size: 8px;
+        flex-direction: column;
+        gap: 0px;
+    }
+    .footer h3 a {
+        font-size: 8px;
+    }
+
+    .example-questions .btn {
+        font-size: 11px;
+        padding: 4px 8px;
     }
 }
 
-/* Further adjustments for very small screens (e.g., old mobile devices) */
+/* Further adjustments for very small screens */
 @media (max-width: 480px) {
-    .pay-now-btn {
-        background-color: #1e1e1e;
-        color: #1a73e8;
-        font-weight: 800;
+    .top_menu {
+        padding: 5px;
     }
-    .pay-now-btn:hover {
-        background-color: #1e1e1e;
-        font-size: 16px;
-        box-shadow: none;
+    .top_menu .user-info,
+    .top_menu .heading-position,
+    .top_menu .payment-status-container {
+        margin-bottom: 3px;
     }
-    .bottom_wrapper {
-        margin-bottom: 30px;
+    .top_menu .user-name {
+        font-size: 11px;
     }
-    .messages {
-        padding: 10px;
+    .top_menu .logout-btn {
+        display: none; /* Hide logout button on very small screens */
     }
-    .message .text {
-        font-size: 12px;
-        padding: 8px 12px;
-    }
-    .message_input {
-        height: 40px;
+    .top_menu .title {
         font-size: 14px;
     }
-    .send_message {
-        height: 40px;
-        font-size: 13px;
-    }
-    .top_menu .title {
-        font-size: 16px;
-    }
-    .top_menu .title {
-        font-size: 16px;
-        text-align: center;
-    }
     .top_menu .disclaimer {
-        font-size: 10px;
+        font-size: 7px;
     }
-    .payment-status-container {
-        flex-direction: row; /* Try to keep them in a row if space allows, or adjust */
-        flex-wrap: wrap;
-        justify-content: center;
+    .chats-remaining-text {
+        display: none;
     }
-    .active-subscription-text, .chats-remaining-text, .pay-now-btn {
-        font-size: 12px;
-        padding: 5px 10px;
+    .profile-pic {
+        display: none;
+    }
+    .user-name {
+        display: none;
+    }
+
+    .messages {
+        padding: 5px;
+    }
+    .message .text {
+        font-size: 11.5px;
+        padding: 6px 8px;
+    }
+
+    .bottom_wrapper {
+        padding: 4px;
+    }
+    .message_input {
+        height: 30px;
+        font-size: 11px;
+        padding: 0 8px;
+    }
+    .send_message {
+        width: 50px;
+        height: 30px;
+        font-size: 11px;
+    }
+
+    .footer h3 {
+        font-size: 7px;
+    }
+    .footer h3 a {
+        font-size: 7px;
+    }
+
+    .modal-title {
+        font-size: 0.8rem;
+    }
+    .modal-body {
+        font-size: 11px;
+    }
+    .modal-footer .btn {
+        font-size: 11px;
+        padding: 5px 12px;
     }
 }

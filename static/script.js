@@ -152,42 +152,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function formatLegalText(text) {
-        // Convert markdown-style formatting to HTML
+        // Headings
         let formattedText = text
-            // Bold text
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            // Italic text
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            // Headings (lines ending with :)
-            .replace(/^(.*?:)\n/gm, '<h4>$1</h4>')
-            // Bullet points
-            .replace(/\n\s*\*\s(.*?)(?=\n\s*\*|$)/g, '<li>$1</li>')
-            // Numbered lists
-            .replace(/\n\s*\d+\.\s(.*?)(?=\n\s*\d+\.|$)/g, '<li>$1</li>');
+            .replace(/^### (.*)$/gm, '<h4>$1</h4>')
+            .replace(/^## (.*)$/gm, '<h4>$1</h4>');
 
-        // Wrap list items in UL tags
-        formattedText = formattedText.replace(/(<li>.*?<\/li>)+/g, function(match) {
-            return match.includes('<ul>') ? match : '<ul>' + match + '</ul>';
+        // Bold and italic (inline anywhere)
+        formattedText = formattedText
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // bold
+            .replace(/\*(.*?)\*/g, '<em>$1</em>');             // italic
+
+        // Bullet list items
+        formattedText = formattedText.replace(/^\s*-\s(.*)$/gm, '<li>$1</li>');
+
+        // Numbered list items
+        formattedText = formattedText.replace(/^\s*\d+\.\s(.*)$/gm, '<li>$1</li>');
+
+        // Wrap list blocks
+        formattedText = formattedText.replace(/(<li>.*?<\/li>)+/gs, match => {
+            return match.match(/^\s*<li>\d+\./) ? `<ol>${match}</ol>` : `<ul>${match}</ul>`;
         });
 
-        // Add section dividers between major sections
-        formattedText = formattedText.replace(/(<\/h4>|<\/ul>)\s*(<h4>|$)/g, '$1<div class="section-divider"></div>$2');
+        // Markdown-style table support
+        formattedText = formattedText.replace(/\|(.+)\|\n\|[-| ]+\|\n((\|.*\|\n?)+)/g, (match, headers, rows) => {
+            const thead = headers.trim().split('|').map(h => `<th>${h.trim()}</th>`).join('');
+            const tbody = rows.trim().split('\n').map(row => {
+                const cells = row.trim().split('|').map(c => `<td>${c.trim()}</td>`).join('');
+                return `<tr>${cells}</tr>`;
+            }).join('');
+            return `<table class="legal-table"><thead><tr>${thead}</tr></thead><tbody>${tbody}</tbody></table>`;
+        });
 
-        // Handle paragraphs and line breaks
+        // Add paragraphs and line breaks
         formattedText = formattedText
-            .replace(/\n\n/g, '</p><p>')
-            .replace(/\n/g, '<br>');
+            .replace(/\n{2,}/g, '</p><p>') // double line break = new paragraph
+            .replace(/\n/g, '<br>');       // single = <br>
 
-        // Ensure proper wrapping
-        if (!formattedText.startsWith('<') && !formattedText.startsWith('<p>')) {
+        // Wrap in <p> if needed
+        if (!formattedText.startsWith('<p>')) {
             formattedText = '<p>' + formattedText + '</p>';
         }
 
-        // Clean up empty paragraphs
-        formattedText = formattedText.replace(/<p><\/p>/g, '');
+        // Remove empty paragraphs
+        formattedText = formattedText.replace(/<p>\s*<\/p>/g, '');
+
+        // Optional: Section divider between major blocks
+        formattedText = formattedText.replace(/(<\/h2>|<\/ul>|<\/ol>|<\/table>)\s*(<h2>|$)/g, '$1<div class="section-divider"></div>$2');
 
         return formattedText;
     }
+
 
     function createTypingIndicator() {
         const typingElement = document.createElement('li');

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
@@ -16,150 +16,172 @@
     content="{% block og_description %}Chat with AI trained on Pakistan's legal system. Free legal help instantly!{% endblock %}">
   <meta property="og:image" content="{{ url_for('static', filename='img/law-og.jpg') }}">
   <meta property="og:url" content="{{ request.url }}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Pakistan Law Adviser</title>
 
   <link rel="icon" href="{{ url_for('static', filename='assets/favicon.ico') }}" type="image/x-icon">
 
-  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Google Fonts: Mulish for professional look -->
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- Bootstrap CSS for modals and general layout utilities -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+  <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
+  <!-- Hidden inputs for Flask data -->
   <input type="hidden" id="initialRemainingChats" value="{{ remaining_chats }}">
-  <input type="hidden" id="initialIsActiveSubscription" value="{{ 'true' if is_active_subscription else 'false' }}">
+  <input type="hidden" id="initialIsActiveSubscription" value="{{ 'True' if is_active_subscription else 'False' }}">
   <input type="hidden" id="chatApiUrl" value="{{ url_for('chat') }}">
   <input type="hidden" id="initialTotalChatsAllowed" value="{{ total_chats_allowed }}">
 
+  <!-- Welcome Modal -->
   <div class="modal fade" id="welcomeModal" tabindex="-1" role="dialog" aria-labelledby="welcomeModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content" style="font-family: 'Mulish', sans-serif;">
+      <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="welcomeModalLabel">📌 How to use Pakistan Law Adviser</h5>
+          <h5 class="modal-title" id="welcomeModalLabel"><i class="fas fa-lightbulb me-2"></i>How to Use Pakistan Law Adviser</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
             onclick="closeWelcomeModal()"></button>
         </div>
         <div class="modal-body">
-          <ul>
-            <li>🧠 This tool has no memory — ask full, clear questions every time.</li>
-            <li>🔍 Use keywords like <b>article</b>, <b>section</b>, or <b>law name</b> for better results.</li>
-            <li>💬 Got suggestions or want to help? Click the <a href="https://github.com/talha828/"
-                target="_blank">GitHub link</a> below.</li>
+          <ul class="list-unstyled">
+            <li><i class="fas fa-brain me-2 text-primary"></i>This tool has no memory — ask full, clear questions every time.</li>
+            <li><i class="fas fa-search me-2 text-success"></i>Use keywords like <b>article</b>, <b>section</b>, or <b>law name</b> for better results.</li>
+            <li><i class="fas fa-comments me-2 text-info"></i>Got suggestions or want to help? Click the <a href="https://github.com/talha828/" target="_blank" class="text-decoration-none fw-bold">GitHub link</a> below.</li>
           </ul>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="closeWelcomeModal()">Got it!</button>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-primary btn-lg" onclick="closeWelcomeModal()">Got it!</button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Payment Modal -->
   <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header text-white" style="background-color: #007bff;">
-          <h5 class="modal-title fw-semibold" id="paymentModalLabel">Complete Your Payment to Unlock Access</h5>
+        <div class="modal-header text-white bg-primary">
+          <h5 class="modal-title fw-semibold" id="paymentModalLabel"><i class="fas fa-lock me-2"></i>Unlock Full Access</h5>
         </div>
         <div class="modal-body">
-          <p class="mb-3">
+          <p class="mb-3 text-muted">
             Your support helps me <strong>continuously improve and upgrade</strong> this tool, making it even more
             powerful and useful for <strong>real-life legal queries</strong>. Please consider supporting this initiative
             by paying <strong>100 PKR</strong>.
           </p>
-          <p id="paymentModalMessage" class="mb-3"></p>
-          <p>To continue, please send <strong>100PKR</strong> using one of the following payment methods:</p>
-          <ul class="list-unstyled">
+          <div id="paymentModalMessage" class="alert alert-danger" role="alert" style="display:none;"></div>
+          <p class="mt-3">To continue, please send <strong>100 PKR</strong> using one of the following payment methods:</p>
+          <ul class="list-unstyled mb-4">
             <li class="mb-2">
-              <strong>Phone Number:</strong> <span id="payment-number">03012070920</span>
+              <strong><i class="fas fa-phone me-2 text-info"></i>Phone Number:</strong> <span id="payment-number">03012070920</span>
               <button class="btn btn-sm btn-outline-secondary ms-2"
-                onclick="copyToClipboard('03012070920')">Copy</button>
+                onclick="copyToClipboard('03012070920')"><i class="fas fa-copy me-1"></i>Copy</button>
             </li>
-            <li class="mb-2"><strong>Accepted Apps:</strong> Easypaisa, NayaPay, JazzCash</li>
-            <li><strong>Recipient Name:</strong> Talha Iqbal</li>
+            <li class="mb-2"><i class="fas fa-mobile-alt me-2 text-success"></i><strong>Accepted Apps:</strong> Easypaisa, NayaPay, JazzCash</li>
+            <li><i class="fas fa-user-circle me-2 text-warning"></i><strong>Recipient Name:</strong> Talha Iqbal</li>
           </ul>
-          <p class="mt-3">After making the payment, kindly share a screenshot of your transaction via WhatsApp for
+          <p class="mt-3 text-muted">After making the payment, kindly share a screenshot of your transaction via WhatsApp for
             verification:</p>
           <p>
-            <strong>WhatsApp Number:</strong> <span id="whatsapp-number">03190347351</span>
-            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('03190347351')">Copy</button>
+            <strong><i class="fab fa-whatsapp me-2 text-success"></i>WhatsApp Number:</strong> <span id="whatsapp-number">03190347351</span>
+            <button class="btn btn-sm btn-outline-secondary ms-2" onclick="copyToClipboard('03190347351')"><i class="fas fa-copy me-1"></i>Copy</button>
           </p>
           <div class="alert alert-warning mt-4 small">
-            Please note: Your chat limit will be reset immediately after your payment is verified. This payment grants
-            access for **1 month**.
+            <i class="fas fa-exclamation-triangle me-2"></i>Please note: Your chat limit will be reset immediately after your payment is verified. This payment grants
+            access for <strong>1 month</strong>.
           </div>
         </div>
-        <div class="modal-footer justify-content-center " style="background-color: #f8f9fa;">
-          <button type="button" class="btn btn-success btn-lg"
-            onclick="alert('Thank you! We are now verifying your payment via WhatsApp. Please allow a moment for us to confirm.')">
-            I've Paid – Awaiting Verification
+        <div class="modal-footer justify-content-center bg-light">
+          <button type="button" class="btn btn-primary btn-lg"
+            onclick="showConfirmationMessage('Thank you! We are now verifying your payment via WhatsApp. Please allow a moment for us to confirm.')">
+            <i class="fas fa-check-circle me-2"></i>I've Paid – Awaiting Verification
           </button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Custom Confirmation Message (replaces alert) -->
+  <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-white">
+        <div class="modal-header border-bottom-0">
+          <h5 class="modal-title" id="confirmationModalLabel">Notification</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p id="confirmationModalMessage"></p>
+        </div>
+        <div class="modal-footer border-top-0 justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio elements for send/receive sounds -->
   <audio id="send-sound" src="{{ url_for('static', filename='assets/send.mp3') }}" preload="auto"></audio>
   <audio id="receive-sound" src="{{ url_for('static', filename='assets/receive.mp3') }}" preload="auto"></audio>
 
+  <!-- Main Chat Window -->
   <div class="chat_window">
     <div class="top_menu">
       <div class="user-info">
         <img src="{{ user_pic }}" alt="Profile" class="profile-pic">
         <span class="user-name">{{ user_name }}</span>
-        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+        <a href="{{ url_for('logout') }}" class="logout-btn"><i class="fas fa-sign-out-alt me-1"></i>Logout</a>
       </div>
       <div class="heading-position">
-        <div class="title">Pakistan Law Adviser</div>
+        <div class="title"><img src=https://i.postimg.cc/nV9BfWCZ/pakistan.png alt="Logo" class="w-6 h-6 mr-2" width="30" height="30" />Pakistan Law Adviser</div>
         <p class="disclaimer">AI can make mistakes. Verify every information you use.</p>
-
       </div>
       <div class="payment-status-container">
         {% if is_active_subscription %}
-        <span class="active-subscription-text">Active Subscription</span>
+        <span class="active-subscription-text"><i class="fas fa-check-circle me-1"></i>Active Subscription</span>
         <span class="chats-remaining-text">Chats: {{ remaining_chats }} / {{ total_chats_allowed }}</span>
         {% else %}
-        <button onclick="showPaymentPopup()" class="pay-now-btn">Support Me</button>
+        <button onclick="showPaymentPopup()" class="pay-now-btn"><i class="fas fa-donate me-2"></i>Support Me</button>
         {% endif %}
       </div>
     </div>
 
+    <!-- Messages Container -->
     <ul class="messages" id="messages-container">
       <li class="message left appeared" id="initial-assistant-message">
         <div class="text">
-          <h4>📌 How to use Pakistan Law Adviser</h4>
+          <h4><i class="fas fa-info-circle me-2"></i>Welcome to Pakistan Law Adviser!</h4>
+          <p>I'm here to help you navigate Pakistan's legal landscape. Ask me anything about:</p>
           <ul>
-            <li>🧠 This tool has no memory — ask full, clear questions every time.</li>
-            <li>🔍 Use keywords like <b>article</b>, <b>section</b>, or <b>law name</b> for better results.</li>
-            <li>💬 Got suggestions or want to help? Click the <a href="https://github.com/talha828/"
-                target="_blank">GitHub link</a> below.</li>
-            <div class="example-questions mt-3">
-              <p><strong>Try asking:</strong></p>
-              <button class="btn btn-sm btn-outline-info mb-1" onclick="useExample('My brother controls my property for safety Can I legally reclaim it or do I need Lyari Gang?')">My
-                brother controls my property 'for safety.' Can I legally reclaim it or do I need Lyari Gang?</button>
-              <p></p>
-              <button class="btn btn-sm btn-outline-info mb-1"
-                onclick="useExample('My cousin took my car and crashed it. He says hum toh aik hi family hain. Can I file an FIR or just break his legs as personal family matter?')">My cousin took my car and crashed it. He
-                says 'hum toh aik hi family hain.' Can I file an FIR or just break his legs as personal family
-                matter?</button>
-              <p></p>
-              <button class="btn btn-sm btn-outline-info mb-1"
-                onclick="useExample('I paid Rs. 50,000 for a fake degree. Can I report the scammer or will I get arrested for trying to become a doctor in 3 weeks?')">I paid Rs. 50,000 for a fake degree.
-                Can I report the scammer or will I get arrested for trying to become a doctor in 3 weeks?</button>
-            </div>
+            <li><i class="fas fa-balance-scale me-2"></i>Constitution of Pakistan</li>
+            <li><i class="fas fa-user-shield me-2"></i>Criminal Law</li>
+            <li><i class="fas fa-handshake me-2"></i>Civil Law</li>
+            <li><i class="fas fa-users me-2"></i>Family Law</li>
           </ul>
+          <p class="fw-bold text-primary">Remember: My responses are for informational purposes only and do not constitute legal advice.</p>
+          <div class="example-questions mt-3">
+            <p><strong><i class="fas fa-question-circle me-2"></i>Try asking:</strong></p>
+            <button class="btn btn-sm btn-outline-info mb-2 me-2" onclick="useExample('My brother controls my property for safety Can I legally reclaim it or do I need Lyari Gang?')">
+              My brother controls my property 'for safety.' Can I legally reclaim it or do I need Lyari Gang?
+            </button>
+            <button class="btn btn-sm btn-outline-info mb-2 me-2"
+              onclick="useExample('My cousin took my car and crashed it. He says hum toh aik hi family hain. Can I file an FIR or just break his legs as personal family matter?')">
+              My cousin took my car and crashed it. He says 'hum toh aik hi family hain.' Can I file an FIR or just break his legs as personal family matter?
+            </button>
+            <button class="btn btn-sm btn-outline-info mb-2"
+              onclick="useExample('I paid Rs. 50,000 for a fake degree. Can I report the scammer or will I get arrested for trying to become a doctor in 3 weeks?')">
+              I paid Rs. 50,000 for a fake degree. Can I report the scammer or will I get arrested for trying to become a doctor in 3 weeks?
+            </button>
+          </div>
         </div>
       </li>
       {% for message in chat_history %}
@@ -169,6 +191,7 @@
       {% endfor %}
     </ul>
 
+    <!-- Chat Input Form -->
     <form method="POST" action="/chat" id="chat-form">
       <div class="bottom_wrapper clearfix">
         <div class="message_input_wrapper">
@@ -176,65 +199,98 @@
             autocomplete="off">
         </div>
         <div class="send_message">
-          <button type="submit" class="no-style">Send</button>
+          <button type="submit" class="no-style"><i class="fas fa-paper-plane"></i> Send</button>
         </div>
       </div>
     </form>
 
+    <!-- Footer -->
     <div class="footer">
       <div class="footer_content">
-        <h3>Do you have any feedback & issue &#169; <a href="https://github.com/talha828/" target="_blank">Github</a>
+        <h3>
+          <i class="fas fa-code me-1"></i> Developed with &#169; by Talha Iqbal | Feedback & Issues on
+          <a href="https://github.com/talha828/" target="_blank"><i class="fab fa-github me-1"></i>GitHub</a>
         </h3>
       </div>
     </div>
   </div>
+
+  <!-- Bootstrap and jQuery JS (keep at end of body for performance) -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Custom JavaScript -->
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+  <script>
+    // These functions are duplicated in script.js and here.
+    // It's better to keep them only in script.js and ensure
+    // index.html calls them only after script.js is loaded.
+    // For now, keeping them here as per original structure,
+    // but recommended to remove from here if script.js loads reliably before any calls.
+
+    function showPaymentPopup(message = "Please complete your payment to continue.") {
+        const paymentModalElement = document.getElementById('paymentModal');
+        if (!paymentModalElement) {
+            console.error("Payment modal element not found!");
+            return;
+        }
+        
+        const paymentModalMessageElement = document.getElementById('paymentModalMessage');
+        if (paymentModalMessageElement) {
+            paymentModalMessageElement.innerHTML = `<strong class="text-danger">${message}</strong>`;
+            paymentModalMessageElement.style.display = 'block'; // Ensure it's visible
+        } else {
+            console.warn("Element with ID 'paymentModalMessage' not found in modal. Message might not be displayed.");
+        }
+
+        const paymentModal = new bootstrap.Modal(paymentModalElement);
+        paymentModal.show();
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showConfirmationMessage(`Copied: ${text}`);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+            showConfirmationMessage('Failed to copy text.');
+        });
+    }
+
+    function useExample(question) {
+        const inputField = document.getElementById('user-input');
+        if (!inputField) {
+            console.error("Could not find input field with ID 'user-input'");
+            return;
+        }
+        inputField.value = question;
+        inputField.focus();
+        console.log("Question set:", question);
+    }
+
+    // Custom function to show a confirmation message (replaces alert)
+    function showConfirmationMessage(message) {
+        const confirmationModalElement = document.getElementById('confirmationModal');
+        if (!confirmationModalElement) {
+            console.error("Confirmation modal element not found!");
+            return;
+        }
+        const confirmationModalMessageElement = document.getElementById('confirmationModalMessage');
+        if (confirmationModalMessageElement) {
+            confirmationModalMessageElement.textContent = message;
+        }
+        const confirmationModal = new bootstrap.Modal(confirmationModalElement);
+        confirmationModal.show();
+    }
+
+    function closeWelcomeModal() {
+        const welcomeModalElement = document.getElementById('welcomeModal');
+        const welcomeModal = bootstrap.Modal.getInstance(welcomeModalElement);
+        if (welcomeModal) {
+            welcomeModal.hide();
+        }
+    }
+  </script>
 </body>
-<script>
-  function showPaymentPopup(message = "Please complete your payment to continue.") {
-    const paymentModalElement = document.getElementById('paymentModal');
-    if (!paymentModalElement) {
-      console.error("Payment modal element not found!");
-      return;
-    }
-    
-
-    // Update the message in the modal body if a specific message is provided
-    const paymentModalMessageElement = document.getElementById('paymentModalMessage');
-    if (paymentModalMessageElement) {
-      paymentModalMessageElement.innerHTML = `<strong class="text-danger">${message}</strong>`;
-    } else {
-      console.warn("Element with ID 'paymentModalMessage' not found in modal. Message might not be displayed.");
-    }
-
-    // Assuming Bootstrap's JavaScript is correctly loaded for this to work
-    const paymentModal = new bootstrap.Modal(paymentModalElement);
-    paymentModal.show();
-  }
-  copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      alert(`Copied: ${text}`);
-    }).catch(err => {
-      console.error('Failed to copy: ', err);
-    });
-  };
-  function useExample(question) {
-      // Get the input field
-      const inputField = document.getElementById('user-input');
-      
-      if (!inputField) {
-        console.error("Could not find input field with ID 'user-input'");
-        return;
-      }
-      
-      // Set the value to the clicked question
-      inputField.value = question;
-      
-      // Focus on the input field
-      inputField.focus();
-      
-      // For debugging - log to console
-      console.log("Question set:", question);
-    }
-</script>
-
 </html>

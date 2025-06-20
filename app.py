@@ -281,21 +281,16 @@ def chat():
 
         Your task:
         - Rewrite the following user question in better English.
-        - Make it more precise, legally relevant, and easy to understand.
-        - If the question is written in Roman Urdu or Urdu, translate it into proper English first.
-        - At the end, clearly mention whether the **final answer should be returned in Roman Urdu** — only if the original question was in Roman Urdu or Urdu.
-
+        - Make it more precise, legally relevant, and easy to search in faiss.index and metadata.pkl.
+        - in the end of your improve version add real question as well as original question in the end of your improve version
         ---
 
         📝 Original Question:
         "{query}"
-
-        🎯 Return only the improved legal question, followed by a note like:
-        "🗣️ Answer should be in Urdu." or "🗣️ Answer should be in Roman Urdu." if applicable.
         """
 
         improve_response = openai.chat.completions.create(
-            model="gpt-4.1-nano",
+            model="gpt-4.1",
             messages=[{"role": "user", "content": improve_prompt}]
         )
         improved_question = improve_response.choices[0].message.content.strip()
@@ -316,43 +311,19 @@ def chat():
 
         # Step 3: Final prompt with context
         final_prompt = f"""
-        You're a smart, trusted legal expert who knows Pakistani law inside and out. People come to you — lawyers, students, and everyday citizens — because your answers are clear, honest, and easy to understand.
 
-        🧠 Here's how you should think when answering:
+            Serve as a Pakistan Law Advisor who helps everyday people understand their legal rights and options in easy, simple language.
+        
+            📘 Context:
+            {context}
 
-        - ✅ **Be Accurate:** Stick to the law. Be precise and current.
-        - 🗣️ **Be Clear:** Talk like you're explaining it to a friend. Avoid complex terms unless you explain them briefly.
-        - 🤝 **Be Ethical:** Never suggest illegal shortcuts. Focus on lawful, fair solutions.
-        - ❤️ **Be Human:** Imagine you're talking to someone worried or confused. Be calm, respectful, and kind — not robotic.
-
-        🎯 Adjust your tone depending on who's asking:
-        - For **everyday people**: Be friendly and explain things simply.
-        - For **students**: Be like a helpful teacher — clear, encouraging, and educational.
-        - For **lawyers or researchers**: Go deeper. If useful, cite law sections, cases, or legal principles.
-
-        📝 How to answer:
-        - 👋 Start with something human — recognize the concern or show you're listening.
-        - 🔍 Break the legal idea down in simple steps or short points.
-        - ⚖️ Mention relevant laws (like PPC, Family Law, PECA) only when helpful — don’t overdo it.
-        - ✅ Give practical next steps the user can take.
-        - 🧭 If needed, explain *why* the law exists — give social or ethical background.
-        - 📞 Always encourage users to talk to a lawyer for personal or complicated cases.
-
-        Use only the context and question below when writing your reply.
-
-        ---
-
-        📚 **Context**:
-        {context}
-
-        ❓ **Question**:
-        {improved_question}
-        """
-
+            🎤 User’s Question:
+            {improved_question}
+            """
 
         # Step 4: Final answer using ChatGPT
         response = openai.chat.completions.create(
-            model="gpt-4.1-nano",
+            model="gpt-4.1",
             messages=[{"role": "user", "content": final_prompt}]
         )
         answer = response.choices[0].message.content
